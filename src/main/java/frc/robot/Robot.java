@@ -248,6 +248,16 @@ public class Robot extends TimedRobot {
     if (drive_controller.getAButton()) {
       gyro.reset();
     }
+    if (opController.getYButton()){
+      elevatorLeft.set(0.1);
+      elevatorRight.set(0.1);
+    } else if(opController.getAButton()){
+      elevatorLeft.set(-0.1);
+      elevatorRight.set(-0.1);
+    } else{
+      elevatorLeft.set(0);
+      elevatorRight.set(0);
+    }
 
   }
 
@@ -383,12 +393,6 @@ public class Robot extends TimedRobot {
         drive.driveCartesian(travelToController.calculate(ta, movePoint) * -1, 0, 0);
       }
       // Defines what happens when you press Right Trigger
-    } else if(opController.getYButton()){
-      elevatorLeft.set(0.1);
-      elevatorRight.set(0.1);
-    } else if(opController.getAButton()){
-      elevatorLeft.set(-0.1);
-      elevatorRight.set(-0.1);
     } else if (drive_controller.getRightTriggerAxis() >= 0.2) {
       // Set the limelight to the right offset of the April tag
       NetworkTableInstance.getDefault().getTable("limelight").getEntry("pipeline").setNumber(3);
