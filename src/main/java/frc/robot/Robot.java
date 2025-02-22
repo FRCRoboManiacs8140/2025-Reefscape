@@ -29,6 +29,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.drive.MecanumDrive;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.AnalogGyro;
 
 
 //  * The VM is configured to automatically run this class, and to call the
@@ -61,7 +62,9 @@ public class Robot extends TimedRobot {
 
   private final XboxController drive_controller = new XboxController(0);
   private final XboxController opController = new XboxController(1);
-  private final ADIS16470_IMU gyro = new ADIS16470_IMU();
+
+  //private final ADIS16470_IMU gyro = new ADIS16470_IMU();
+  private final AnalogGyro gyro = new AnalogGyro(0);
 
   public double autonomousStartTime, timeElapsed;
   public double strafeStartTime = 0;
