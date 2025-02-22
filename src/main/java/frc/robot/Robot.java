@@ -47,13 +47,13 @@ public class Robot extends TimedRobot {
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
 
 
-  private final SparkMax leftFront = new SparkMax(3,MotorType.kBrushless);
-  private final SparkMax rightFront = new SparkMax(2,MotorType.kBrushless);
-  private final SparkMax leftBack = new SparkMax(1,MotorType.kBrushless);
-  private final SparkMax rightBack = new SparkMax(4,MotorType.kBrushless);
+  private final SparkMax leftFront = new SparkMax(6,MotorType.kBrushless);
+  private final SparkMax rightFront = new SparkMax(1,MotorType.kBrushless);
+  private final SparkMax leftBack = new SparkMax(4,MotorType.kBrushless);
+  private final SparkMax rightBack = new SparkMax(2,MotorType.kBrushless);
 
-  private final SparkMax elevatorRight = new SparkMax(5,MotorType.kBrushless);
-  private final SparkMax elevatorLeft = new SparkMax(6,MotorType.kBrushless);
+  private final SparkMax elevatorRight = new SparkMax(3,MotorType.kBrushless);
+  private final SparkMax elevatorLeft = new SparkMax(5,MotorType.kBrushless);
 
 
   //private final MecanumDrive drive = new MecanumDrive(leftFront, leftBack, rightFront, rightBack);      
