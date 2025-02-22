@@ -1,0 +1,373 @@
+/* */
+// !!IMPORTANT!!
+// This is NOT the current code 
+// This is the code on date 2/4/2025 
+
+/**
+// Copyright (c) FIRST and other WPILib contributors.
+// Open Source Software; you can modify and/or share it under the terms of
+// the WPILib BSD license file in the root di rectory of this project.
+
+package frc.robot;
+
+import java.lang.reflect.Array;
+
+import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
+import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.ADIS16470_IMU;
+import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.drive.MecanumDrive;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
+/**
+ * The VM is configured to automatically run this class, and to call the
+ * functions corresponding to
+ * each mode, as described in the TimedRobot documentation. If you change the
+ * name of this class or
+ * the package after creating this project, you must also update the
+ * build.gradle file in the
+ * project.
+ */
+/* 
+public class Robot extends TimedRobot {
+  private static final String kDefaultAuto = "Default";
+
+  private String m_autoSelected;
+  private final SendableChooser<String> m_chooser = new SendableChooser<>();
+
+  private final WPI_VictorSPX leftFront = new WPI_VictorSPX(3);
+  private final WPI_VictorSPX rightFront = new WPI_VictorSPX(2);
+  private final WPI_VictorSPX leftBack = new WPI_VictorSPX(1);
+  private final WPI_VictorSPX rightBack = new WPI_VictorSPX(4);
+
+  private final MecanumDrive drive = new MecanumDrive(leftFront, leftBack, rightFront, rightBack);
+
+  private final XboxController drive_controller = new XboxController(0);
+
+  private final ADIS16470_IMU gyro = new ADIS16470_IMU();
+
+  public double autonomousStartTime, timeElapsed;
+  public double second = 1;
+  public double lastSecond = 0;
+
+  // CameraServer server;
+
+  double current_angle;
+
+  /**
+   * This function is run when the robot is first started up and should be used
+   * for any
+   * initialization code.
+   */
+  /* 
+  @Override
+  public void robotInit() {
+    m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
+
+    SmartDashboard.putData("Auto choices", m_chooser);
+    leftFront.setInverted(true);
+    rightFront.setInverted(false);
+    leftBack.setInverted(true);
+    rightBack.setInverted(false);
+    SmartDashboard.putNumber("drive_reduction", 1);
+
+    CameraServer.startAutomaticCapture();
+    SmartDashboard.putNumber("travel_to_integral_PDI", 0.05);
+    SmartDashboard.putNumber("travel_to_proportional_PDI", 0.1);
+    SmartDashboard.putNumber("travel_to_derivative_PDI", 0.1);
+
+    SmartDashboard.putNumber("strafe_to_integral_PDI", 0.0015);
+    SmartDashboard.putNumber("strafe_to_proportional_PDI", 0.001);
+    SmartDashboard.putNumber("strafe_to_derivative_PDI", 0.02);
+  }
+
+  /**
+   * This function is called every 20 ms, no matter the mode. Use this for items
+   * like diagnostics
+   * that you want ran during disabled, autonomous, teleoperated and test.
+   *
+   * <p>
+   * This runs after the mode specific periodic functions, but before LiveWindow
+   * and
+   * SmartDashboard integrated updating.
+   */
+  /* 
+  @Override
+  public void robotPeriodic() {
+    SmartDashboard.putNumber("current angle", current_angle);
+    double gameTime = Timer.getFPGATimestamp() - autonomousStartTime;
+    SmartDashboard.putNumber("Time Remaining", (150 - gameTime));
+
+  }
+
+  /**
+   * This autonomous (along with the chooser code above) shows how to select
+   * between different
+   * autonomous modes using the dashboard. The sendable chooser code works with
+   * the Java
+   * SmartDashboard. If you prefer the LabVIEW Dashboard, remove all of the
+   * chooser code and
+   * uncomment the getString line to get the auto name from the text box below the
+   * Gyro
+   *
+   * <p>
+   * You can add additional auto modes by adding additional comparisons to the
+   * switch structure
+   * below with additional strings. If using the SendableChooser make sure to add
+   * them to the
+   * chooser code above as well.
+   */
+  /* 
+  @Override
+  public void autonomousInit() {
+    m_autoSelected = m_chooser.getSelected();
+    // m_autoSelected = SmartDashboard.getString("Auto Selector", kDefaultAuto);
+    System.out.println("Auto selected: " + m_autoSelected);
+    SmartDashboard.putNumber("Drive Speed", .25);
+
+    autonomousStartTime = Timer.getFPGATimestamp();
+
+  }
+  /** This function is called periodically during autonomous. */
+  /* 
+  @Override
+  public void autonomousPeriodic() {
+
+  }
+
+  /** This function is called once when teleop is enabled. */
+  /* 
+  @Override
+  public void teleopInit() {
+    rightBack.setNeutralMode(NeutralMode.Brake);
+    leftBack.setNeutralMode(NeutralMode.Brake);
+    rightFront.setNeutralMode(NeutralMode.Brake);
+    leftFront.setNeutralMode(NeutralMode.Brake);
+    gyro.reset();
+  }
+
+  /** This function is called periodically during operator control. */
+  /* 
+  @Override
+  public void teleopPeriodic() {
+    getlimelightcontrols();
+    SmartDashboard.putNumber("Gyro Angle", gyro.getAngle());
+
+    if (drive_controller.getXButton()) {
+      gyro.reset();
+    }
+
+  }
+
+  // Runs the limelight function
+  public void getlimelightcontrols() {
+
+    // Outputs limelight as variables and puts them in the dashboard
+
+    // Boolean that is 1 if a target is detected, 0 if not
+    double tv = NetworkTableInstance.getDefault().getTable("limelight").getEntry("tv").getDouble(0);
+    // X angle distance from center of camera frame to center of target
+    double tx = NetworkTableInstance.getDefault().getTable("limelight").getEntry("tx").getDouble(0);
+    // Y angle distance from center of camera frame to center of target
+    double ty = NetworkTableInstance.getDefault().getTable("limelight").getEntry("ty").getDouble(0);
+    // Area of the camera frame that the object takes up, can be used to estimate
+    // how close the object is
+    double ta = NetworkTableInstance.getDefault().getTable("limelight").getEntry("ta").getDouble(0);
+    double botpose[] = NetworkTableInstance.getDefault().getTable("limelight").getEntry("botpose").getDoubleArray(new double[6]);
+
+    // values for travel to; PID
+    /*
+
+  double tkI = SmartDashboard.getNumber("travel_to_integral_PDI", 0.05); 
+  double tkP = SmartDashboard.getNumber("travel_to_proportional_PDI", 0.3);  
+  double tkD = SmartDashboard.getNumber("travel_to_derivative_PDI", 0.01); 
+
+    // values for strafe; PID 
+
+  double kI = SmartDashboard.getNumber("strafe_to_integral_PDI", 0.4);
+  double kP = SmartDashboard.getNumber("strafe_to_proportional_PDI", 0.5); 
+  double kD = SmartDashboard.getNumber("strafe_to_derivative_PDI", 0.4); 
+
+    PIDController travelToController = new PIDController(tkP, tkI, tkD);
+    travelToController.setIntegratorRange(-5,5);
+    PIDController strafeController = new PIDController(kP, kI, kD);
+    strafeController.setIntegratorRange(-5,5);
+    strafeController.setIZone(1);
+
+    SmartDashboard.putNumber("Target X", tx); // Distance between of the crosshair and the object in the X coordinate
+    SmartDashboard.putNumber("Target y", ty); // Distance between of the crosshair and the object in the Y coordinate
+    SmartDashboard.putNumber("Target Area", ta); // The area that the object takes up
+    SmartDashboard.putNumber("Target Present", tv); 
+
+    try {
+        SmartDashboard.putNumber("Rotation", botpose[5]*0.025);
+       } catch (Exception e) {
+       }
+    //SmartDashboard.putNumber("botpose", botpose[5]);
+    // Multiplier that turns the X angle distance into a motor output percent.
+    // (angle is between -27 and 27, this turns it into a number between -.81 and
+    // .81 that is higher the farther away the object is)
+    // This needs to be tuned to the specific object and tested
+    double turn = tx * -.005;
+    double strafe = tx * -.025;
+    double setPoint = 0;
+    
+    
+
+    // what % of the limelight vision the april tag takes up
+    double movePoint = 5;
+    double travelTo = (15 - ta) * (-0.01 / ta);
+    SmartDashboard.putNumber("strafe value", strafeController.calculate(tx,0));
+    SmartDashboard.putNumber("travel value", travelToController.calculate(ta,movePoint));
+    // double strafe = (ty/tx)*-0.1;
+    SmartDashboard.putNumber("locate", turn);
+
+    // Multiplier that turns the area that the object takes up into a motor output
+    // percent.
+    SmartDashboard.putNumber("travel to", travelTo);
+    // automatically drives to the object
+    Rotation2d gyroangle = Rotation2d.fromDegrees(-gyro.getAngle());
+    double movement_sensetivity = SmartDashboard.getNumber("drive_reduction", 1);
+    double turn_sensetivity = 1;
+
+    second = (lastSecond + 1)/50;
+
+    // Defines what happens when you press LeftBumper
+    if (drive_controller.getLeftBumper()) {
+      // Go to color vision
+      NetworkTableInstance.getDefault().getTable("limelight").getEntry("pipeline").setNumber(1);
+      if (tv == 1) {
+        // Drive towards nearest Algea Gamepiece
+        drive.driveCartesian(travelTo, strafe, turn);
+      }
+      // Defines what happens when you press RightBumper
+    } else if (drive_controller.getRightBumper()) {
+      current_angle = gyro.getAngle();
+      // Go to April Tag Vision
+      NetworkTableInstance.getDefault().getTable("limelight").getEntry("pipeline").setNumber(0);
+      if (tv == 1) {
+        // Go to nearest April Tag
+        // Commented out to test new code!!!
+        // drive.driveCartesian(travelTo, strafe, ((-(gyro.getAngle() - current_angle) %
+        // 360) * .5),
+        // Rotation2d.fromDegrees(0));
+        try {
+          drive.driveCartesian(
+              0, // MathUtil.clamp((travelToController.calculate(ta,movePoint)*-1*movement_sensetivity),-0.5,0.5),
+              (strafeController.calculate(tx, 0)),
+              botpose[5] * .0005);
+
+        } catch (Exception e) {
+          drive.driveCartesian(
+              drive_controller.getLeftY() * movement_sensetivity,
+              -drive_controller.getLeftX() * movement_sensetivity,
+              -drive_controller.getRightX() * turn_sensetivity, gyroangle);
+        }
+        // if (drive_controller.get)
+      }
+      // Defines what happens when you press AButton
+    } else if (drive_controller.getAButton()) {
+      //Strafe left
+      current_angle = gyro.getAngle();
+      drive.driveCartesian(0, 0.23, ((-(gyro.getAngle() - current_angle) % 360) * .05), Rotation2d.fromDegrees(0));
+    } else if (drive_controller.getYButton()) {
+      //Strafe right
+      current_angle = gyro.getAngle();
+      drive.driveCartesian(0, -0.23, ((-(gyro.getAngle() - current_angle) % 360) * .05), Rotation2d.fromDegrees(0));
+      //Defines what happens when you press BButton
+    } else if (drive_controller.getBButton()) {
+      //Moves forward using travelTo PID Controller
+      drive.driveCartesian(travelToController.calculate(ta,movePoint)*-1,0,0); 
+      //Defines what happens when you press Right Trigger
+    } else if (drive_controller.getRightTriggerAxis() >= 0.2) {
+      // Set the limelight to the right offset of the April tag
+      NetworkTableInstance.getDefault().getTable("limelight").getEntry("pipeline").setNumber(3);
+      // Check to see if the robot can see an April tag
+      if (tv == 1) {
+        try {
+          drive.driveCartesian(
+              //Strafe to the April tag
+              0,
+              MathUtil.clamp(strafeController.calculate(tx, 0), -0.5, 0.5),
+              botpose[5] * .0005);
+        //Set robot to manual controll if the robot can't see a April tag
+        } catch (Exception e) {
+          drive.driveCartesian(
+              drive_controller.getLeftY() * movement_sensetivity,
+              -drive_controller.getLeftX() * movement_sensetivity,
+              -drive_controller.getRightX() * turn_sensetivity, gyroangle);
+        }
+      }
+    } else if (drive_controller.getLeftTriggerAxis() >= 0.2){
+            //When you hold the Left Trigger
+      //Set the limelight to the left offset of the April tag
+      NetworkTableInstance.getDefault().getTable("limelight").getEntry("pipeline").setNumber(2);
+      //Check to see if the robot can see an April tag
+       if (tv == 1) {
+       try {
+          //Strafe to the April tag
+          drive.driveCartesian(
+              0, 
+              MathUtil.clamp(strafeController.calculate(tx, 0), -0.5, 0.5),
+              botpose[5] * .0005);
+        //Set robot to manual control if the robot can't see a April tag
+        } catch (Exception e) {
+          drive.driveCartesian(
+              drive_controller.getLeftY() * movement_sensetivity,
+              -drive_controller.getLeftX() * movement_sensetivity,
+              -drive_controller.getRightX() * turn_sensetivity, gyroangle);
+        }
+      }
+      } else{
+              // Set robot to manual control if the robot can't see a April tag(This is NOT a duplicate plz don't delete)
+        drive.driveCartesian(
+              drive_controller.getLeftY() * movement_sensetivity,
+              -drive_controller.getLeftX() * movement_sensetivity,
+              -drive_controller.getRightX() * turn_sensetivity, gyroangle);
+      }
+    
+    
+      
+    
+    double lastSecond = second;
+
+  } // ends teleop
+
+  /** This function is called once when the robot is disabled. */
+  @Override
+  public void disabledInit() {
+  }
+
+  /** This function is called periodically when disabled. */
+  @Override
+  public void disabledPeriodic() {
+  }
+
+  /** This function is called once when test mode is enabled. */
+  @Override
+  public void testInit() {
+  }
+
+  /** This function is called periodically during test mode. */
+  @Override
+  public void testPeriodic() {
+  }
+
+  /** This function is called once when the robot is first started up. */
+  @Override
+  public void simulationInit() {
+  }
+
+  /** This function is called periodically whilst in simulation. */
+  @Override
+  public void simulationPeriodic() {
+  }
+}
