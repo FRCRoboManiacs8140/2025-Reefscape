@@ -296,6 +296,8 @@ public class Robot extends TimedRobot {
     PIDController strafeController = new PIDController(kP, kI, kD);
     strafeController.setIntegratorRange(-5, 5);
     strafeController.setIZone(1);
+    PIDController turnController = new PIDController(.02, .1,0 );
+    PIDController anglePreserve = new PIDController(.01, .1, 0);
 
     SmartDashboard.putNumber("Target X", tx); // Distance between of the crosshair and the object in the X coordinate
     SmartDashboard.putNumber("Target y", ty); // Distance between of the crosshair and the object in the Y coordinate
