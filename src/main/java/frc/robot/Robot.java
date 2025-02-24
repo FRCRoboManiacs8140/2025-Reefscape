@@ -261,7 +261,7 @@ public class Robot extends TimedRobot {
     double botpose[] = NetworkTableInstance.getDefault().getTable("limelight").getEntry("botpose")
         .getDoubleArray(new double[6]);
     int id = NetworkTableInstance.getDefault().getTable("limelight").getEntry("tid").getNumber(0).intValue();
-    double tagAngle;
+    double tagAngle = 0;
     if ((id == 7 || id == 18)) {
       tagAngle = 0;
     } 
@@ -388,6 +388,12 @@ public class Robot extends TimedRobot {
         // Moves forward using travelTo PID Controller
         drive.driveCartesian(travelToController.calculate(ta, movePoint) * -1, 0, 0);
       }
+    }
+      else if (drive_controller.getXButton()) {
+        drive.driveCartesian(
+            0,
+            0,
+            turnController.calculate(gyro.getAngle() % 360, tagAngle));
       // Defines what happens when you press Right Trigger
     } else if (drive_controller.getRightTriggerAxis() >= 0.2) {
       // Set the limelight to the right offset of the April tag
