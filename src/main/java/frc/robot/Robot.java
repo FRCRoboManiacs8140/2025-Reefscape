@@ -238,7 +238,7 @@ public class Robot extends TimedRobot {
     getlimelightcontrols();
     SmartDashboard.putNumber("Gyro Angle", gyro.getAngle());
 
-    if (drive_controller.getXButton()) {
+    if (drive_controller.getRawAxis(0) == 0) {
       gyro.reset();
     }
 
@@ -377,11 +377,11 @@ public class Robot extends TimedRobot {
     } else if (drive_controller.getAButton()) {
       // Strafe left
       current_angle = gyro.getAngle();
-      drive.driveCartesian(0, 0.23, ((-(gyro.getAngle() - current_angle) % 360) * .05), Rotation2d.fromDegrees(0));
+      drive.driveCartesian(-.05, -0.3, (anglePreserve.calculate(gyro.getRate(), 0)), Rotation2d.fromDegrees(0));
     } else if (drive_controller.getYButton()) {
       // Strafe right
       current_angle = gyro.getAngle();
-      drive.driveCartesian(0, -0.23, ((-(gyro.getAngle() - current_angle) % 360) * .05), Rotation2d.fromDegrees(0));
+      drive.driveCartesian(-.05, 0.3, (anglePreserve.calculate(gyro.getRate(), 0)), Rotation2d.fromDegrees(0));
       // Defines what happens when you press BButton
     } else if (drive_controller.getBButton()) {
       if (tv == 1) {
