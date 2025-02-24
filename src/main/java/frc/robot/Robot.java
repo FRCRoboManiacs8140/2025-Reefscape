@@ -260,7 +260,26 @@ public class Robot extends TimedRobot {
     double ta = NetworkTableInstance.getDefault().getTable("limelight").getEntry("ta").getDouble(0);
     double botpose[] = NetworkTableInstance.getDefault().getTable("limelight").getEntry("botpose")
         .getDoubleArray(new double[6]);
-
+    int id = NetworkTableInstance.getDefault().getTable("limelight").getEntry("tid").getNumber(0).intValue();
+    double tagAngle;
+    if ((id == 7 || id == 18)) {
+      tagAngle = 0;
+    } 
+    else if ((id == 6 || id == 19)) {
+      tagAngle = 60;
+    }
+    else if ((id == 11 || id == 20)) {
+      tagAngle = 120;
+    }
+    else if ((id == 10 || id == 21)) {
+      tagAngle = 180;
+    }
+    else if ((id == 9 || id == 22)) {
+      tagAngle = 240;
+    }
+    else if ((id == 8 || id == 17)) {
+      tagAngle = 300;
+    }
     // values for travel to; PID
     double tkI = SmartDashboard.getNumber("travel_to_integral_PID", 0.);
     double tkP = SmartDashboard.getNumber("travel_to_proportional_PID", 0.005);
