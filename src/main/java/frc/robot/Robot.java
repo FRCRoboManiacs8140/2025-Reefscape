@@ -1,21 +1,14 @@
 // Copyright (c) FIRST and other WPILib contributors.
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root di rectory of this project.
-// Testing
 
 
 package frc.robot;
 
 import java.lang.reflect.Array;
 
-import com.revrobotics.spark.SparkMax;
-import com.revrobotics.spark.config.SparkMaxConfig;
-import com.revrobotics.spark.SparkLowLevel.MotorType;
-import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
-import com.revrobotics.spark.SparkBase;
-
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.hal.simulation.DriverStationDataJNI;
 import edu.wpi.first.math.MathUtil;
@@ -29,7 +22,6 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.drive.MecanumDrive;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj.AnalogGyro;
 
 
 //  * The VM is configured to automatically run this class, and to call the
@@ -47,24 +39,16 @@ public class Robot extends TimedRobot {
   private String m_autoSelected;
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
 
+  private final WPI_VictorSPX leftFront = new WPI_VictorSPX(3);
+  private final WPI_VictorSPX rightFront = new WPI_VictorSPX(2);
+  private final WPI_VictorSPX leftBack = new WPI_VictorSPX(1);
+  private final WPI_VictorSPX rightBack = new WPI_VictorSPX(4);
 
-  private final SparkMax leftFront = new SparkMax(6,MotorType.kBrushless);
-  private final SparkMax rightFront = new SparkMax(1,MotorType.kBrushless);
-  private final SparkMax leftBack = new SparkMax(4,MotorType.kBrushless);
-  private final SparkMax rightBack = new SparkMax(2,MotorType.kBrushless);
-
-  private final SparkMax elevatorRight = new SparkMax(3,MotorType.kBrushless);
-  private final SparkMax elevatorLeft = new SparkMax(5,MotorType.kBrushless);
-
-
-  //private final MecanumDrive drive = new MecanumDrive(leftFront, leftBack, rightFront, rightBack);      
   private final MecanumDrive drive = new MecanumDrive(leftFront, leftBack, rightFront, rightBack);
 
   private final XboxController drive_controller = new XboxController(0);
-  private final XboxController opController = new XboxController(1);
 
-  //private final ADIS16470_IMU gyro = new ADIS16470_IMU();
-  private final AnalogGyro gyro = new AnalogGyro(0);
+  private final ADIS16470_IMU gyro = new ADIS16470_IMU();
 
   public double autonomousStartTime, timeElapsed;
   public double strafeStartTime = 0;
@@ -75,8 +59,8 @@ public class Robot extends TimedRobot {
 
   double current_angle;
 
-  
-  //  * This function is run when the robot is first started up and should be used
+ 
+  //  This function is run when the robot is first started up and should be used
   //  * for any
   //  * initialization code.
   //  *
@@ -86,6 +70,10 @@ public class Robot extends TimedRobot {
     m_chooser.addOption("Secondary Auto", kSecondaryAuto);
 
     SmartDashboard.putData("Auto choices", m_chooser);
+    leftFront.setInverted(true);
+    rightFront.setInverted(false);
+    leftBack.setInverted(true);
+    rightBack.setInverted(false);
     SmartDashboard.putNumber("drive_reduction", 1);
 
     CameraServer.startAutomaticCapture();
@@ -99,7 +87,7 @@ public class Robot extends TimedRobot {
 
   }
 
-  
+
   //  * This function is called every 20 ms, no matter the mode. Use this for items
   //  * like diagnostics
   //  * that you want ran during disabled, autonomous, teleoperated and test.
@@ -120,7 +108,7 @@ public class Robot extends TimedRobot {
 
   }
 
-  
+
   //  * This autonomous (along with the chooser code above) shows how to select
   //  * between different
   //  * autonomous modes using the dashboard. The sendable chooser code works with
@@ -136,7 +124,7 @@ public class Robot extends TimedRobot {
   //  * below with additional strings. If using the SendableChooser make sure to add
   //  * them to the
   //  * chooser code above as well.
-  //  *
+   
   @Override
   public void autonomousInit() {
     m_autoSelected = m_chooser.getSelected();
@@ -183,7 +171,6 @@ public class Robot extends TimedRobot {
     double movepoint = 1;
     boolean moveForward = false;
     double rotateTo = tx * -0.5;
-    
     if (tv == 0) {
       tx = 100;
     }
@@ -199,9 +186,8 @@ public class Robot extends TimedRobot {
           if (tv == 0) {
             drive.driveCartesian(0, 0, 0.3);
           }
-          if (tx < -5 || tx > 5){
+          if (tx < -5 || tx > 5)
             drive.driveCartesian(0, 0, rotateTo);
-          }
         }
         if (moveForward == true) {
           if ((tv == 1) && !(tx > -2 && tx < 2)) {
@@ -239,6 +225,10 @@ public class Robot extends TimedRobot {
   //This function is called once when teleop is enabled. *
   @Override
   public void teleopInit() {
+    rightBack.setNeutralMode(NeutralMode.Brake);
+    leftBack.setNeutralMode(NeutralMode.Brake);
+    rightFront.setNeutralMode(NeutralMode.Brake);
+    leftFront.setNeutralMode(NeutralMode.Brake);
     gyro.reset();
   }
 
@@ -248,18 +238,8 @@ public class Robot extends TimedRobot {
     getlimelightcontrols();
     SmartDashboard.putNumber("Gyro Angle", gyro.getAngle());
 
-    if (drive_controller.getAButton()) {
+    if (drive_controller.getXButton()) {
       gyro.reset();
-    }
-    if (opController.getYButton()){
-      elevatorLeft.set(0.1);
-      elevatorRight.set(0.1);
-    } else if(opController.getAButton()){
-      elevatorLeft.set(-0.1);
-      elevatorRight.set(-0.1);
-    } else{
-      elevatorLeft.set(0);
-      elevatorRight.set(0);
     }
 
   }
@@ -280,19 +260,15 @@ public class Robot extends TimedRobot {
     double ta = NetworkTableInstance.getDefault().getTable("limelight").getEntry("ta").getDouble(0);
     double botpose[] = NetworkTableInstance.getDefault().getTable("limelight").getEntry("botpose")
         .getDoubleArray(new double[6]);
-    double campose[] = NetworkTableInstance.getDefault().getTable("limelight").getEntry("campose")
-        .getDoubleArray(new double[6]);
 
     // values for travel to; PID
-    
-    
     double tkI = SmartDashboard.getNumber("travel_to_integral_PID", 0.);
     double tkP = SmartDashboard.getNumber("travel_to_proportional_PID", 0.005);
     double tkD = SmartDashboard.getNumber("travel_to_derivative_PID", 0);
 
     // values for strafe; PID
 
-    double kI = SmartDashboard.getNumber("strafe_to_integral_PID", .5);
+    double kI = SmartDashboard.getNumber("strafe_to_integral_PID", 0.4);
     double kP = SmartDashboard.getNumber("strafe_to_proportional_PID", 0.5);
     double kD = SmartDashboard.getNumber("strafe_to_derivative_PID", 0.4);
 
@@ -301,15 +277,14 @@ public class Robot extends TimedRobot {
     PIDController strafeController = new PIDController(kP, kI, kD);
     strafeController.setIntegratorRange(-5, 5);
     strafeController.setIZone(1);
-    PIDController turnController = new PIDController(.02, .1,0 );
-    PIDController anglePreserve = new PIDController(.01, .1, 0);
+
     SmartDashboard.putNumber("Target X", tx); // Distance between of the crosshair and the object in the X coordinate
     SmartDashboard.putNumber("Target y", ty); // Distance between of the crosshair and the object in the Y coordinate
     SmartDashboard.putNumber("Target Area", ta); // The area that the object takes up
     SmartDashboard.putNumber("Target Present", tv);
 
     try {
-      SmartDashboard.putNumber("Rotation", botpose[5]);
+      SmartDashboard.putNumber("Rotation", botpose[5] * 0.025);
     } catch (Exception e) {
     }
     // SmartDashboard.putNumber("botpose", botpose[5]);
@@ -359,13 +334,10 @@ public class Robot extends TimedRobot {
         // 360) * .5),
         // Rotation2d.fromDegrees(0));
         try {
-         
           drive.driveCartesian(
               0, // MathUtil.clamp((travelToController.calculate(ta,movePoint)*-1*movement_sensetivity),-0.5,0.5),
-              (MathUtil.clamp(strafeController.calculate(tx, 0), -0.8, 0.8)),
-              campose[4] * .0005);
-          
-          
+              (MathUtil.clamp(strafeController.calculate(tx, 0), -0.5, 0.8)),
+              botpose[5] * .0005);
 
         } catch (Exception e) {
           drive.driveCartesian(
@@ -381,16 +353,16 @@ public class Robot extends TimedRobot {
       // the bee of course flys
 
       // Defines what happens when you press AButton
-    // } else if (drive_controller.getXButton()) {
-    //   // Strafe left
-    //   current_angle = gyro.getAngle();
-    //   drive.driveCartesian(0, 0.23, ((-(gyro.getAngle() - current_angle) % 360) * .05), Rotation2d.fromDegrees(0));
-    } else if (drive_controller.getBButton()) {
+    } else if (drive_controller.getAButton()) {
+      // Strafe left
+      current_angle = gyro.getAngle();
+      drive.driveCartesian(0, 0.23, ((-(gyro.getAngle() - current_angle) % 360) * .05), Rotation2d.fromDegrees(0));
+    } else if (drive_controller.getYButton()) {
       // Strafe right
       current_angle = gyro.getAngle();
-      drive.driveCartesian(-.05, -0.3, (anglePreserve.calculate(gyro.getRate(), 0)), Rotation2d.fromDegrees(0));
+      drive.driveCartesian(0, -0.23, ((-(gyro.getAngle() - current_angle) % 360) * .05), Rotation2d.fromDegrees(0));
       // Defines what happens when you press BButton
-    } else if (drive_controller.getYButton()) {
+    } else if (drive_controller.getBButton()) {
       if (tv == 1) {
         // Moves forward using travelTo PID Controller
         drive.driveCartesian(travelToController.calculate(ta, movePoint) * -1, 0, 0);
@@ -435,11 +407,6 @@ public class Robot extends TimedRobot {
               -drive_controller.getRightX() * turn_sensetivity, gyroangle);
         }
       }
-    } else if (drive_controller.getXButton()) {
-      drive.driveCartesian(
-          0,
-          0,
-          turnController.calculate(gyro.getAngle() % 360, 0));
     } else {
       // Set robot to manual control if the robot can't see a April tag(This is NOT a
       // duplicate plz don't delete)
@@ -472,12 +439,12 @@ public class Robot extends TimedRobot {
   public void testPeriodic() {
   }
 
-  //This function is called once when the robot is first started up. *
+  // This function is called once when the robot is first started up. *
   @Override
   public void simulationInit() {
   }
 
-  //This function is called periodically whilst in simulation. *
+  // This function is called periodically whilst in simulation. *
   @Override
   public void simulationPeriodic() {
   }
