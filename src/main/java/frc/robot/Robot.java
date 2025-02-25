@@ -119,15 +119,6 @@ public class Robot extends TimedRobot {
     SmartDashboard.putNumber("Time Remaining", (150 - gameTime));
     SmartDashboard.putNumber("Time elapsed", gameTime);
 
-    
-     SparkMax elevatorRight;
-     elevatorRight = new SparkMax(3, MotorType.kBrushless);
-     RelativeEncoder elevator_encoder;
-     elevator_encoder = elevatorRight.getEncoder();
-     PIDController elevatorPID = new PIDController(0.1,0,0);
-    
-     SmartDashboard.putNumber("Elevator Position", elevator_encoder.getPosition());
-
   }
 
   
@@ -457,8 +448,7 @@ public class Robot extends TimedRobot {
           -drive_controller.getLeftX() * movement_sensetivity,
           -drive_controller.getRightX() * turn_sensetivity, gyroangle);
     }
-    double lastSecond = second;
-
+  
   } // ends teleop
 
   //This function is called once when the robot is disabled. *
