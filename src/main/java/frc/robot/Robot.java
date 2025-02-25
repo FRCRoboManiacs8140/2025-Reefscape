@@ -14,6 +14,7 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
+import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkBase;
 
 import edu.wpi.first.cameraserver.CameraServer;
@@ -117,6 +118,15 @@ public class Robot extends TimedRobot {
     SmartDashboard.putNumber("Strafe Time", strafeTime);
     SmartDashboard.putNumber("Time Remaining", (150 - gameTime));
     SmartDashboard.putNumber("Time elapsed", gameTime);
+
+    
+     SparkMax elevatorRight;
+     elevatorRight = new SparkMax(3, MotorType.kBrushless);
+     RelativeEncoder elevator_encoder;
+     elevator_encoder = elevatorRight.getEncoder();
+     PIDController elevatorPID = new PIDController(0.1,0,0);
+    
+     SmartDashboard.putNumber("Elevator Position", elevator_encoder.getPosition());
 
   }
 
@@ -247,7 +257,6 @@ public class Robot extends TimedRobot {
   public void teleopPeriodic() {
     getlimelightcontrols();
     SmartDashboard.putNumber("Gyro Angle", gyro.getAngle());
-
     if (drive_controller.getAButton()) {
       gyro.reset();
     }
@@ -259,7 +268,7 @@ public class Robot extends TimedRobot {
       elevatorRight.set(-0.1);
     } else{
       elevatorLeft.set(0);
-      elevatorRight.set(0);
+      elevatorLeft.set(0);
     }
 
   }
