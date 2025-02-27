@@ -264,7 +264,7 @@ public class Robot extends TimedRobot {
       elevatorLeft.set(-0.1);
       elevatorRight.set(-0.1);
     } else if(opController.getRightBumperButton()){
-      elevatorLeft.set(elevatorPID.calculate(elevator_encoder.getPosition(),10));
+      elevatorLeft.set(elevatorPID.calculate(elevator_encoder.getPosition(),25));
     }else{
       elevatorLeft.set(0);
       elevatorLeft.set(0);
