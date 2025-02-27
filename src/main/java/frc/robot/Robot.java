@@ -344,7 +344,7 @@ public class Robot extends TimedRobot {
     SmartDashboard.putNumber("travel to", travelTo);
     // automatically drives to the object
     Rotation2d gyroangle = Rotation2d.fromDegrees(-gyro.getAngle());
-    double movement_sensetivity = SmartDashboard.getNumber("drive_reduction", 0.8);
+    double movement_sensetivity = SmartDashboard.getNumber("drive_reduction", 0.6);
     double turn_sensetivity = 1;
 
     second = (lastSecond + 1) / 50;
@@ -398,7 +398,7 @@ public class Robot extends TimedRobot {
     } else if (drive_controller.getBButton()) {
       // Strafe right
       current_angle = gyro.getAngle();
-      drive.driveCartesian(-.05, -0.3, (anglePreserve.calculate(gyro.getRate(), 0)), Rotation2d.fromDegrees(0));
+      drive.driveCartesian(-.05, 0.3, (anglePreserve.calculate(gyro.getRate(), 0)), Rotation2d.fromDegrees(0));
       // Defines what happens when you press BButton
     } else if (drive_controller.getYButton()) {
       if (tv == 1) {
@@ -446,10 +446,7 @@ public class Robot extends TimedRobot {
         }
       }
     } else if (drive_controller.getXButton()) {
-      drive.driveCartesian(
-          0,
-          0,
-          turnController.calculate(gyro.getAngle() % 360, 0));
+      drive.driveCartesian(-.05, 0.3, (anglePreserve.calculate(gyro.getRate(), 0)), Rotation2d.fromDegrees(0));
     } else {
       // Set robot to manual control if the robot can't see a April tag(This is NOT a
       // duplicate plz don't delete)
