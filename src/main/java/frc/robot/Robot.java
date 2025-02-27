@@ -120,8 +120,6 @@ public class Robot extends TimedRobot {
     SmartDashboard.putNumber("Time elapsed", gameTime);
 
     
-     SparkMax elevatorRight;
-     elevatorRight = new SparkMax(3, MotorType.kBrushless);
      RelativeEncoder elevator_encoder;
      elevator_encoder = elevatorRight.getEncoder();
      PIDController elevatorPID = new PIDController(0.1,0,0);
