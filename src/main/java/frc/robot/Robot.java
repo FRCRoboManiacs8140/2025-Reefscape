@@ -258,13 +258,16 @@ public class Robot extends TimedRobot {
     if (drive_controller.getAButton()) {
       gyro.reset();
     }
+    // double elevator_encoder_teleop = SmartDashboard.getNumber("Elevator Position", elevator_encoder.getPosition());
     if (opController.getYButton()){
       elevatorLeft.set(0.1);
       elevatorRight.set(0.1);
     } else if(opController.getAButton()){
       elevatorLeft.set(-0.1);
       elevatorRight.set(-0.1);
-    } else{
+    } else if(opController.getRightBumperButton()){
+      
+    }else{
       elevatorLeft.set(0);
       elevatorLeft.set(0);
     }
@@ -341,7 +344,7 @@ public class Robot extends TimedRobot {
     SmartDashboard.putNumber("travel to", travelTo);
     // automatically drives to the object
     Rotation2d gyroangle = Rotation2d.fromDegrees(-gyro.getAngle());
-    double movement_sensetivity = SmartDashboard.getNumber("drive_reduction", 1);
+    double movement_sensetivity = SmartDashboard.getNumber("drive_reduction", 0.8);
     double turn_sensetivity = 1;
 
     second = (lastSecond + 1) / 50;
@@ -378,7 +381,7 @@ public class Robot extends TimedRobot {
           drive.driveCartesian(
               drive_controller.getLeftY() * movement_sensetivity,
               -drive_controller.getLeftX() * movement_sensetivity,
-              -drive_controller.getRightX() * turn_sensetivity, gyroangle);
+              drive_controller.getRightX() * turn_sensetivity, gyroangle);
         }
         // if (drive_controller.get)
       }
@@ -417,9 +420,9 @@ public class Robot extends TimedRobot {
           // Set robot to manual controll if the robot can't see a April tag
         } catch (Exception e) {
           drive.driveCartesian(
-              drive_controller.getLeftY() * movement_sensetivity,
-              -drive_controller.getLeftX() * movement_sensetivity,
-              -drive_controller.getRightX() * turn_sensetivity, gyroangle);
+              -drive_controller.getLeftY() * movement_sensetivity,
+              drive_controller.getLeftX() * movement_sensetivity,
+              drive_controller.getRightX() * turn_sensetivity, gyroangle);
         }
       }
     } else if (drive_controller.getLeftTriggerAxis() >= 0.2) {
@@ -437,9 +440,9 @@ public class Robot extends TimedRobot {
           // Set robot to manual control if the robot can't see a April tag
         } catch (Exception e) {
           drive.driveCartesian(
-              drive_controller.getLeftY() * movement_sensetivity,
-              -drive_controller.getLeftX() * movement_sensetivity,
-              -drive_controller.getRightX() * turn_sensetivity, gyroangle);
+              -drive_controller.getLeftY() * movement_sensetivity,
+              drive_controller.getLeftX() * movement_sensetivity,
+              drive_controller.getRightX() * turn_sensetivity, gyroangle);
         }
       }
     } else if (drive_controller.getXButton()) {
@@ -451,9 +454,9 @@ public class Robot extends TimedRobot {
       // Set robot to manual control if the robot can't see a April tag(This is NOT a
       // duplicate plz don't delete)
       drive.driveCartesian(
-          drive_controller.getLeftY() * movement_sensetivity,
-          -drive_controller.getLeftX() * movement_sensetivity,
-          -drive_controller.getRightX() * turn_sensetivity, gyroangle);
+          -drive_controller.getLeftY() * movement_sensetivity*movement_sensetivity,
+          drive_controller.getLeftX() * movement_sensetivity*movement_sensetivity,
+          drive_controller.getRightX() * turn_sensetivity, gyroangle);
     }
     double lastSecond = second;
 
