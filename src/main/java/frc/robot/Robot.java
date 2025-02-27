@@ -118,13 +118,7 @@ public class Robot extends TimedRobot {
     SmartDashboard.putNumber("Strafe Time", strafeTime);
     SmartDashboard.putNumber("Time Remaining", (150 - gameTime));
     SmartDashboard.putNumber("Time elapsed", gameTime);
-
-    
-     RelativeEncoder elevator_encoder;
-     elevator_encoder = elevatorRight.getEncoder();
-     PIDController elevatorPID = new PIDController(0.1,0,0);
-    
-     SmartDashboard.putNumber("Elevator Position", elevator_encoder.getPosition());
+   
 
   }
 
@@ -258,6 +252,10 @@ public class Robot extends TimedRobot {
     if (drive_controller.getAButton()) {
       gyro.reset();
     }
+    RelativeEncoder elevator_encoder;
+     elevator_encoder = elevatorRight.getEncoder();
+    PIDController elevatorPID = new PIDController(0.1,0,0);
+    SmartDashboard.putNumber("Elevator Position", elevator_encoder.getPosition());
     // double elevator_encoder_teleop = SmartDashboard.getNumber("Elevator Position", elevator_encoder.getPosition());
     if (opController.getYButton()){
       elevatorLeft.set(0.1);
@@ -266,7 +264,7 @@ public class Robot extends TimedRobot {
       elevatorLeft.set(-0.1);
       elevatorRight.set(-0.1);
     } else if(opController.getRightBumperButton()){
-      
+      elevatorLeft.set(elevatorPID.calculate(elevator_encoder.getPosition(),10));
     }else{
       elevatorLeft.set(0);
       elevatorLeft.set(0);
@@ -305,7 +303,6 @@ public class Robot extends TimedRobot {
     double kI = SmartDashboard.getNumber("strafe_to_integral_PID", .5);
     double kP = SmartDashboard.getNumber("strafe_to_proportional_PID", 0.5);
     double kD = SmartDashboard.getNumber("strafe_to_derivative_PID", 0.4);
-
     PIDController travelToController = new PIDController(tkP, tkI, tkD);
     travelToController.setIntegratorRange(-5, 5);
     PIDController strafeController = new PIDController(kP, kI, kD);
@@ -446,7 +443,7 @@ public class Robot extends TimedRobot {
         }
       }
     } else if (drive_controller.getXButton()) {
-      drive.driveCartesian(-.05, 0.3, (anglePreserve.calculate(gyro.getRate(), 0)), Rotation2d.fromDegrees(0));
+      drive.driveCartesian(-.05, -0.3, (anglePreserve.calculate(gyro.getRate(), 0)), Rotation2d.fromDegrees(0));
     } else {
       // Set robot to manual control if the robot can't see a April tag(This is NOT a
       // duplicate plz don't delete)
