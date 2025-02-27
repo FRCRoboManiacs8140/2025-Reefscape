@@ -257,14 +257,33 @@ public class Robot extends TimedRobot {
     PIDController elevatorPID = new PIDController(0.1,0,0);
     SmartDashboard.putNumber("Elevator Position", elevator_encoder.getPosition());
     // double elevator_encoder_teleop = SmartDashboard.getNumber("Elevator Position", elevator_encoder.getPosition());
+    //Y makes elevator go up manually
     if (opController.getYButton()){
       elevatorLeft.set(0.1);
       elevatorRight.set(0.1);
+    // A makes elevator go up manually
     } else if(opController.getAButton()){
       elevatorLeft.set(-0.1);
       elevatorRight.set(-0.1);
+
+    // IMPORTANT setpoints for opController levels need to be set and tuned!
+
+    // Right Bumper is L1
     } else if(opController.getRightBumperButton()){
       elevatorLeft.set(elevatorPID.calculate(elevator_encoder.getPosition(),25));
+      elevatorRight.set(elevatorPID.calculate(elevator_encoder.getPosition(),25));
+    // Left Bummper is L2
+    }else if(opController.getLeftBumperButton()){
+      elevatorLeft.set(elevatorPID.calculate(elevator_encoder.getPosition(),25));
+      elevatorRight.set(elevatorPID.calculate(elevator_encoder.getPosition(),25));
+    // Right Trigger is L3
+    }else if(opController.getRightTriggerAxis()>0.2){
+      elevatorLeft.set(elevatorPID.calculate(elevator_encoder.getPosition(),25));
+      elevatorRight.set(elevatorPID.calculate(elevator_encoder.getPosition(),25));
+    // Left Trigger is L4
+    }else if(opController.getLeftTriggerAxis()>0.2){
+      elevatorLeft.set(elevatorPID.calculate(elevator_encoder.getPosition(),25));
+      elevatorRight.set(elevatorPID.calculate(elevator_encoder.getPosition(),25));
     }else{
       elevatorLeft.set(0);
       elevatorLeft.set(0);
