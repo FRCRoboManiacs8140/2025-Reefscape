@@ -67,6 +67,9 @@ public class Robot extends TimedRobot {
   //private final ADIS16470_IMU gyro = new ADIS16470_IMU();
   private final AnalogGyro gyro = new AnalogGyro(0);
 
+  //private final for encoder
+  private final RelativeEncoder elevator_encoder = elevatorRight.getEncoder();
+
   public double autonomousStartTime, timeElapsed;
   public double strafeStartTime = 0;
   public double second = 1;
@@ -242,6 +245,7 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopInit() {
     gyro.reset();
+    elevator_encoder.equals(0);
   }
 
   //This function is called periodically during operator control. *
@@ -252,8 +256,6 @@ public class Robot extends TimedRobot {
     if (drive_controller.getAButton()) {
       gyro.reset();
     }
-    RelativeEncoder elevator_encoder;
-     elevator_encoder = elevatorRight.getEncoder();
     PIDController elevatorPID = new PIDController(0.1,0,0);
     SmartDashboard.putNumber("Elevator Position", elevator_encoder.getPosition());
     // double elevator_encoder_teleop = SmartDashboard.getNumber("Elevator Position", elevator_encoder.getPosition());
@@ -270,20 +272,20 @@ public class Robot extends TimedRobot {
 
     // Right Bumper is L1
     } else if(opController.getRightBumperButton()){
-      elevatorLeft.set(elevatorPID.calculate(elevator_encoder.getPosition(),25));
-      elevatorRight.set(elevatorPID.calculate(elevator_encoder.getPosition(),25));
+      elevatorLeft.set(elevatorPID.calculate(elevator_encoder.getPosition(),30));
+      elevatorRight.set(elevatorPID.calculate(elevator_encoder.getPosition(),30));
     // Left Bummper is L2
     }else if(opController.getLeftBumperButton()){
-      elevatorLeft.set(elevatorPID.calculate(elevator_encoder.getPosition(),25));
-      elevatorRight.set(elevatorPID.calculate(elevator_encoder.getPosition(),25));
+      elevatorLeft.set(elevatorPID.calculate(elevator_encoder.getPosition(),40));
+      elevatorRight.set(elevatorPID.calculate(elevator_encoder.getPosition(),40));
     // Right Trigger is L3
     }else if(opController.getRightTriggerAxis()>0.2){
-      elevatorLeft.set(elevatorPID.calculate(elevator_encoder.getPosition(),25));
-      elevatorRight.set(elevatorPID.calculate(elevator_encoder.getPosition(),25));
+      elevatorLeft.set(elevatorPID.calculate(elevator_encoder.getPosition(),60));
+      elevatorRight.set(elevatorPID.calculate(elevator_encoder.getPosition(),60));
     // Left Trigger is L4
     }else if(opController.getLeftTriggerAxis()>0.2){
-      elevatorLeft.set(elevatorPID.calculate(elevator_encoder.getPosition(),25));
-      elevatorRight.set(elevatorPID.calculate(elevator_encoder.getPosition(),25));
+      elevatorLeft.set(elevatorPID.calculate(elevator_encoder.getPosition(),100));
+      elevatorRight.set(elevatorPID.calculate(elevator_encoder.getPosition(),100));
     }else{
       elevatorLeft.set(0);
       elevatorLeft.set(0);
