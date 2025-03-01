@@ -41,8 +41,9 @@ import edu.wpi.first.wpilibj.AnalogGyro;
 //  * project.
 //  *
 public class Robot extends TimedRobot {
-  private static final String kDefaultAuto = "Default";
-  private static final String kSecondaryAuto = "Secondary Auto";
+  private static final String kFrontAuto = "Front Auto";
+  private static final String kLeftAuto = "Left Auto";
+  private static final String kRightAuto = "Right Auto";
 
   private String m_autoSelected;
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
@@ -85,8 +86,9 @@ public class Robot extends TimedRobot {
   //  *
   @Override
   public void robotInit() {
-    m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
-    m_chooser.addOption("Secondary Auto", kSecondaryAuto);
+    m_chooser.setDefaultOption("Front Auto", kFrontAuto);
+    m_chooser.addOption("Left Auto", kLeftAuto);
+    m_chooser.addOption("Right Auto", kRightAuto);
 
     SmartDashboard.putData("Auto choices", m_chooser);
     SmartDashboard.putNumber("drive_reduction", 1);
@@ -195,50 +197,24 @@ public class Robot extends TimedRobot {
     }
 
     switch (m_autoSelected) {
-      case kSecondaryAuto:
+      // If Left Auto is selected . . .
+      case kLeftAuto:
         // Secondary Autonomous code
         NetworkTableInstance.getDefault().getTable("limelight").getEntry("pipeline").setNumber(0);
-        if (tv == 1 && (tx > -2 && tx < 2)) {
-          moveForward = true;
-        }
-        if ((autoTime > 0 && autoTime < 1000) && moveForward == false) {
-          if (tv == 0) {
-            drive.driveCartesian(0, 0, 0.3);
-          }
-          if (tx < -5 || tx > 5){
-            drive.driveCartesian(0, 0, rotateTo);
-          }
-        }
-        if (moveForward == true) {
-          if ((tv == 1) && !(tx > -2 && tx < 2)) {
-            // double strafeTime = SmartDashboard.getNumber("Strafe Time", strafeStartTime);
-            // while (strafeTime>0 && strafeTime<2){
-            drive.driveCartesian(
-                0,
-                MathUtil.clamp(strafeController.calculate(tx, 0), -0, 0.5),
-                0);
-            // }
-          }
-          if ((tv == 1) && !(ta > 1)) {
-            drive.driveCartesian(
-                MathUtil.clamp(-travelToController.calculate(ta, movepoint), -0.5, 0.5),
-                0,
-                // botpose[5] * .0005
-                0);
-          }
-          if ((tv == 1) && (tx == 0) && (ta > 1)) {
-            moveForward = false;
-            autoTime = 1000;
-          }
-        }
+        
         break;
-      case kDefaultAuto:
+      // If Front Auto is selected . . .
+      case kFrontAuto:
         // Default:
         // Default Autonomous code
         if (autoTime > 0 && autoTime < 2) {
           drive.driveCartesian(-0.25, 0, 0);
         }
         break;
+      // If right Auto is selected . . .
+      case kRightAuto:
+
+      break;
     }
   }
 
