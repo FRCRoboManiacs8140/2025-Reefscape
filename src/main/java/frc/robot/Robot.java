@@ -1,7 +1,6 @@
 // Copyright (c) FIRST and other WPILib contributors.
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root di rectory of this project.
-// testing to see if merge worked
 
 
 package frc.robot;
@@ -48,7 +47,7 @@ public class Robot extends TimedRobot {
   private String m_autoSelected;
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
 
-
+  // Define motors
   private final SparkMax leftFront = new SparkMax(6,MotorType.kBrushless);
   private final SparkMax rightFront = new SparkMax(1,MotorType.kBrushless);
   private final SparkMax leftBack = new SparkMax(4,MotorType.kBrushless);
@@ -93,10 +92,11 @@ public class Robot extends TimedRobot {
     SmartDashboard.putNumber("drive_reduction", 1);
 
     CameraServer.startAutomaticCapture();
+    // PID for travel to autonomous movement
     SmartDashboard.putNumber("travel_to_integral_PID", 0.01);
     SmartDashboard.putNumber("travel_to_proportional_PID", 0.06);
     SmartDashboard.putNumber("travel_to_derivative_PID", 0.05);
-
+    // PID for strafe to autonomous movement
     SmartDashboard.putNumber("strafe_to_integral_PID", 1);
     SmartDashboard.putNumber("strafe_to_proportional_PID", 0.02);
     SmartDashboard.putNumber("strafe_to_derivative_PID", 0.5);
@@ -115,6 +115,7 @@ public class Robot extends TimedRobot {
   //  *
   @Override
   public void robotPeriodic() {
+    //Put the current angle and game time on the dashboard
     SmartDashboard.putNumber("current angle", current_angle);
     double gameTime = Timer.getFPGATimestamp() - autonomousStartTime;
     double strafeTime = Timer.getFPGATimestamp() - strafeStartTime;
@@ -143,6 +144,7 @@ public class Robot extends TimedRobot {
   //  *
   @Override
   public void autonomousInit() {
+    // Select which autonomous routine
     m_autoSelected = m_chooser.getSelected();
     System.out.println("Auto selected: " + m_autoSelected);
     SmartDashboard.putNumber("Drive Speed", .25);
@@ -286,6 +288,7 @@ public class Robot extends TimedRobot {
       elevatorLeft.set(elevatorPID.calculate(elevator_encoder.getPosition(),100));
       elevatorRight.set(elevatorPID.calculate(elevator_encoder.getPosition(),100));
     }else{
+    // Stop the elevator from moving if no buttons are being held
       elevatorLeft.set(0);
       elevatorLeft.set(0);
     }
@@ -312,21 +315,22 @@ public class Robot extends TimedRobot {
         .getDoubleArray(new double[6]);
 
     // values for travel to; PID
-    
-    
     double tkI = SmartDashboard.getNumber("travel_to_integral_PID", 0.);
     double tkP = SmartDashboard.getNumber("travel_to_proportional_PID", 0.005);
     double tkD = SmartDashboard.getNumber("travel_to_derivative_PID", 0);
 
     // values for strafe; PID
-
     double kI = SmartDashboard.getNumber("strafe_to_integral_PID", .5);
     double kP = SmartDashboard.getNumber("strafe_to_proportional_PID", 0.5);
     double kD = SmartDashboard.getNumber("strafe_to_derivative_PID", 0.4);
+
+    // Set up PID controll for Travel To motion
     PIDController travelToController = new PIDController(tkP, tkI, tkD);
     travelToController.setIntegratorRange(-5, 5);
+    // Set up PID controll for Strafe To motion
     PIDController strafeController = new PIDController(kP, kI, kD);
     strafeController.setIntegratorRange(-5, 5);
+
     strafeController.setIZone(1);
     PIDController turnController = new PIDController(.02, .1,0 );
     PIDController anglePreserve = new PIDController(.01, .1, 0);
@@ -344,6 +348,7 @@ public class Robot extends TimedRobot {
     // (angle is between -27 and 27, this turns it into a number between -.81 and
     // .81 that is higher the farther away the object is)
     // This needs to be tuned to the specific object and tested
+    // Values for porportional drive, algea
     double turn = tx * -.005;
     double strafe = tx * -.025;
     double setPoint = 2;
