@@ -121,7 +121,6 @@ public class Robot extends TimedRobot {
     SmartDashboard.putNumber("Strafe Time", strafeTime);
     SmartDashboard.putNumber("Time Remaining", (150 - gameTime));
     SmartDashboard.putNumber("Time elapsed", gameTime);
-   
 
   }
 
@@ -473,8 +472,7 @@ public class Robot extends TimedRobot {
           drive_controller.getLeftX() * movement_sensetivity*movement_sensetivity,
           drive_controller.getRightX() * turn_sensetivity, gyroangle);
     }
-    double lastSecond = second;
-
+  
   } // ends teleop
 
   //This function is called once when the robot is disabled. *
