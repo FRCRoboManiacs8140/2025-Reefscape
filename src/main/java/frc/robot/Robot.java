@@ -2,7 +2,6 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root di rectory of this project.
 
-
 package frc.robot;
 
 import java.lang.reflect.Array;
@@ -31,7 +30,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.AnalogGyro;
 
-
 //  * The VM is configured to automatically run this class, and to call the
 //  * functions corresponding to
 //  * each mode, as described in the TimedRobot documentation. If you change the
@@ -49,25 +47,25 @@ public class Robot extends TimedRobot {
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
 
   // Define motors
-  private final SparkMax leftFront = new SparkMax(6,MotorType.kBrushless);
-  private final SparkMax rightFront = new SparkMax(1,MotorType.kBrushless);
-  private final SparkMax leftBack = new SparkMax(4,MotorType.kBrushless);
-  private final SparkMax rightBack = new SparkMax(2,MotorType.kBrushless);
+  private final SparkMax leftFront = new SparkMax(6, MotorType.kBrushless);
+  private final SparkMax rightFront = new SparkMax(1, MotorType.kBrushless);
+  private final SparkMax leftBack = new SparkMax(4, MotorType.kBrushless);
+  private final SparkMax rightBack = new SparkMax(2, MotorType.kBrushless);
 
-  private final SparkMax elevatorRight = new SparkMax(3,MotorType.kBrushless);
-  private final SparkMax elevatorLeft = new SparkMax(5,MotorType.kBrushless);
+  private final SparkMax elevatorRight = new SparkMax(3, MotorType.kBrushless);
+  private final SparkMax elevatorLeft = new SparkMax(5, MotorType.kBrushless);
 
-
-  //private final MecanumDrive drive = new MecanumDrive(leftFront, leftBack, rightFront, rightBack);      
+  // private final MecanumDrive drive = new MecanumDrive(leftFront, leftBack,
+  // rightFront, rightBack);
   private final MecanumDrive drive = new MecanumDrive(leftFront, leftBack, rightFront, rightBack);
 
   private final XboxController drive_controller = new XboxController(0);
   private final XboxController opController = new XboxController(1);
 
-  //private final ADIS16470_IMU gyro = new ADIS16470_IMU();
+  // private final ADIS16470_IMU gyro = new ADIS16470_IMU();
   private final AnalogGyro gyro = new AnalogGyro(0);
 
-  //private final for encoder
+  // private final for encoder
   private final RelativeEncoder elevator_encoder = elevatorRight.getEncoder();
 
   public double autonomousStartTime, timeElapsed;
@@ -79,11 +77,10 @@ public class Robot extends TimedRobot {
 
   double current_angle;
 
-  
-  //  * This function is run when the robot is first started up and should be used
-  //  * for any
-  //  * initialization code.
-  //  *
+  // * This function is run when the robot is first started up and should be used
+  // * for any
+  // * initialization code.
+  // *
   @Override
   public void robotInit() {
     m_chooser.setDefaultOption("Front Auto", kFrontAuto);
@@ -105,19 +102,18 @@ public class Robot extends TimedRobot {
 
   }
 
-  
-  //  * This function is called every 20 ms, no matter the mode. Use this for items
-  //  * like diagnostics
-  //  * that you want ran during disabled, autonomous, teleoperated and test.
-  //  *
-  //  * <p>
-  //  * This runs after the mode specific periodic functions, but before LiveWindow
-  //  * and
-  //  * SmartDashboard integrated updating.
-  //  *
+  // * This function is called every 20 ms, no matter the mode. Use this for items
+  // * like diagnostics
+  // * that you want ran during disabled, autonomous, teleoperated and test.
+  // *
+  // * <p>
+  // * This runs after the mode specific periodic functions, but before LiveWindow
+  // * and
+  // * SmartDashboard integrated updating.
+  // *
   @Override
   public void robotPeriodic() {
-    //Put the current angle and game time on the dashboard
+    // Put the current angle and game time on the dashboard
     SmartDashboard.putNumber("current angle", current_angle);
     double gameTime = Timer.getFPGATimestamp() - autonomousStartTime;
     double strafeTime = Timer.getFPGATimestamp() - strafeStartTime;
@@ -127,23 +123,24 @@ public class Robot extends TimedRobot {
 
   }
 
-  
-  //  * This autonomous (along with the chooser code above) shows how to select
-  //  * between different
-  //  * autonomous modes using the dashboard. The sendable chooser code works with
-  //  * the Java
-  //  * SmartDashboard. If you prefer the LabVIEW Dashboard, remove all of the
-  //  * chooser code and
-  //  * uncomment the getString line to get the auto name from the text box below the
-  //  * Gyro
-  //  *
-  //  * <p>
-  //  * You can add additional auto modes by adding additional comparisons to the
-  //  * switch structure
-  //  * below with additional strings. If using the SendableChooser make sure to add
-  //  * them to the
-  //  * chooser code above as well.
-  //  *
+  // * This autonomous (along with the chooser code above) shows how to select
+  // * between different
+  // * autonomous modes using the dashboard. The sendable chooser code works with
+  // * the Java
+  // * SmartDashboard. If you prefer the LabVIEW Dashboard, remove all of the
+  // * chooser code and
+  // * uncomment the getString line to get the auto name from the text box below
+  // the
+  // * Gyro
+  // *
+  // * <p>
+  // * You can add additional auto modes by adding additional comparisons to the
+  // * switch structure
+  // * below with additional strings. If using the SendableChooser make sure to
+  // add
+  // * them to the
+  // * chooser code above as well.
+  // *
   @Override
   public void autonomousInit() {
     // Select which autonomous routine
@@ -155,7 +152,7 @@ public class Robot extends TimedRobot {
 
   }
 
-  //This function is called periodically during autonomous. *
+  // This function is called periodically during autonomous. *
   @Override
 
   public void autonomousPeriodic() {
@@ -188,44 +185,64 @@ public class Robot extends TimedRobot {
     PIDController strafeController = new PIDController(kP, kI, kD);
     strafeController.setIntegratorRange(-5, 5);
     strafeController.setIZone(1);
-    double movepoint = 1;
-    boolean moveForward = false;
-    double rotateTo = tx * -0.5;
-    
-    if (tv == 0) {
-      tx = 100;
-    }
+
+    NetworkTableInstance.getDefault().getTable("limelight").getEntry("pipeline").setNumber(0);
 
     switch (m_autoSelected) {
       // If Left Auto is selected . . .
       case kLeftAuto:
-        // Secondary Autonomous code
-        NetworkTableInstance.getDefault().getTable("limelight").getEntry("pipeline").setNumber(0);
-        
+        if (autoTime > 0 && autoTime < 5) {
+
+        }
+        if (autoTime > 5 && autoTime < 10) {
+
+        }
+        if (autoTime > 10 && autoTime < 15) {
+
+        }
+        if (autoTime > 15) {
+          // Stop moving if time becomes more than 15
+          drive.driveCartesian(0, 0, 0);
+          // Needs code that switches mode to Teleop when time is over 15 seconds.
+        }
         break;
+
       // If Front Auto is selected . . .
       case kFrontAuto:
-        // Default:
-        // Default Autonomous code
+        // Drive Forward for 2 seconds at 25% speed
         if (autoTime > 0 && autoTime < 2) {
           drive.driveCartesian(-0.25, 0, 0);
         }
         break;
+
       // If right Auto is selected . . .
       case kRightAuto:
+        if (autoTime > 0 && autoTime < 5) {
 
-      break;
+        }
+        if (autoTime > 5 && autoTime < 10) {
+
+        }
+        if (autoTime > 10 && autoTime < 15) {
+
+        }
+        if (autoTime > 15) {
+          // Stop moving if time becomes more than 15
+          drive.driveCartesian(0, 0, 0);
+          // Needs code that switches mode to Teleop when time is over 15 seconds.
+        }
+        break;
     }
   }
 
-  //This function is called once when teleop is enabled. *
+  // This function is called once when teleop is enabled. *
   @Override
   public void teleopInit() {
     gyro.reset();
     elevator_encoder.equals(0);
   }
 
-  //This function is called periodically during operator control. *
+  // This function is called periodically during operator control. *
   @Override
   public void teleopPeriodic() {
     getlimelightcontrols();
@@ -233,38 +250,39 @@ public class Robot extends TimedRobot {
     if (drive_controller.getAButton()) {
       gyro.reset();
     }
-    PIDController elevatorPID = new PIDController(0.1,0,0);
+    PIDController elevatorPID = new PIDController(0.1, 0, 0);
     SmartDashboard.putNumber("Elevator Position", elevator_encoder.getPosition());
-    // double elevator_encoder_teleop = SmartDashboard.getNumber("Elevator Position", elevator_encoder.getPosition());
-    //Y makes elevator go up manually
-    if (opController.getYButton()){
+    // double elevator_encoder_teleop = SmartDashboard.getNumber("Elevator
+    // Position", elevator_encoder.getPosition());
+    // Y makes elevator go up manually
+    if (opController.getYButton()) {
       elevatorLeft.set(0.1);
       elevatorRight.set(0.1);
-    // A makes elevator go up manually
-    } else if(opController.getAButton()){
+      // A makes elevator go up manually
+    } else if (opController.getAButton()) {
       elevatorLeft.set(-0.1);
       elevatorRight.set(-0.1);
 
-    // IMPORTANT setpoints for opController levels need to be set and tuned!
+      // IMPORTANT setpoints for opController levels need to be set and tuned!
 
-    // Right Bumper is L1
-    } else if(opController.getRightBumperButton()){
-      elevatorLeft.set(elevatorPID.calculate(elevator_encoder.getPosition(),30));
-      elevatorRight.set(elevatorPID.calculate(elevator_encoder.getPosition(),30));
-    // Left Bummper is L2
-    }else if(opController.getLeftBumperButton()){
-      elevatorLeft.set(elevatorPID.calculate(elevator_encoder.getPosition(),40));
-      elevatorRight.set(elevatorPID.calculate(elevator_encoder.getPosition(),40));
-    // Right Trigger is L3
-    }else if(opController.getRightTriggerAxis()>0.2){
-      elevatorLeft.set(elevatorPID.calculate(elevator_encoder.getPosition(),60));
-      elevatorRight.set(elevatorPID.calculate(elevator_encoder.getPosition(),60));
-    // Left Trigger is L4
-    }else if(opController.getLeftTriggerAxis()>0.2){
-      elevatorLeft.set(elevatorPID.calculate(elevator_encoder.getPosition(),100));
-      elevatorRight.set(elevatorPID.calculate(elevator_encoder.getPosition(),100));
-    }else{
-    // Stop the elevator from moving if no buttons are being held
+      // Right Bumper is L1
+    } else if (opController.getRightBumperButton()) {
+      elevatorLeft.set(elevatorPID.calculate(elevator_encoder.getPosition(), 30));
+      elevatorRight.set(elevatorPID.calculate(elevator_encoder.getPosition(), 30));
+      // Left Bummper is L2
+    } else if (opController.getLeftBumperButton()) {
+      elevatorLeft.set(elevatorPID.calculate(elevator_encoder.getPosition(), 40));
+      elevatorRight.set(elevatorPID.calculate(elevator_encoder.getPosition(), 40));
+      // Right Trigger is L3
+    } else if (opController.getRightTriggerAxis() > 0.2) {
+      elevatorLeft.set(elevatorPID.calculate(elevator_encoder.getPosition(), 60));
+      elevatorRight.set(elevatorPID.calculate(elevator_encoder.getPosition(), 60));
+      // Left Trigger is L4
+    } else if (opController.getLeftTriggerAxis() > 0.2) {
+      elevatorLeft.set(elevatorPID.calculate(elevator_encoder.getPosition(), 100));
+      elevatorRight.set(elevatorPID.calculate(elevator_encoder.getPosition(), 100));
+    } else {
+      // Stop the elevator from moving if no buttons are being held
       elevatorLeft.set(0);
       elevatorLeft.set(0);
     }
@@ -308,7 +326,7 @@ public class Robot extends TimedRobot {
     strafeController.setIntegratorRange(-5, 5);
 
     strafeController.setIZone(1);
-    PIDController turnController = new PIDController(.02, .1,0 );
+    PIDController turnController = new PIDController(.02, .1, 0);
     PIDController anglePreserve = new PIDController(.01, .1, 0);
     SmartDashboard.putNumber("Target X", tx); // Distance between of the crosshair and the object in the X coordinate
     SmartDashboard.putNumber("Target y", ty); // Distance between of the crosshair and the object in the Y coordinate
@@ -367,13 +385,11 @@ public class Robot extends TimedRobot {
         // 360) * .5),
         // Rotation2d.fromDegrees(0));
         try {
-         
+
           drive.driveCartesian(
               0, // MathUtil.clamp((travelToController.calculate(ta,movePoint)*-1*movement_sensetivity),-0.5,0.5),
               (MathUtil.clamp(strafeController.calculate(tx, 0), -0.8, 0.8)),
               campose[4] * .0005);
-          
-          
 
         } catch (Exception e) {
           drive.driveCartesian(
@@ -389,10 +405,11 @@ public class Robot extends TimedRobot {
       // the bee of course flys
 
       // Defines what happens when you press AButton
-    // } else if (drive_controller.getXButton()) {
-    //   // Strafe left
-    //   current_angle = gyro.getAngle();
-    //   drive.driveCartesian(0, 0.23, ((-(gyro.getAngle() - current_angle) % 360) * .05), Rotation2d.fromDegrees(0));
+      // } else if (drive_controller.getXButton()) {
+      // // Strafe left
+      // current_angle = gyro.getAngle();
+      // drive.driveCartesian(0, 0.23, ((-(gyro.getAngle() - current_angle) % 360) *
+      // .05), Rotation2d.fromDegrees(0));
     } else if (drive_controller.getBButton()) {
       // Strafe right
       current_angle = gyro.getAngle();
@@ -449,39 +466,39 @@ public class Robot extends TimedRobot {
       // Set robot to manual control if the robot can't see a April tag(This is NOT a
       // duplicate plz don't delete)
       drive.driveCartesian(
-          -drive_controller.getLeftY() * movement_sensetivity*movement_sensetivity,
-          drive_controller.getLeftX() * movement_sensetivity*movement_sensetivity,
+          -drive_controller.getLeftY() * movement_sensetivity * movement_sensetivity,
+          drive_controller.getLeftX() * movement_sensetivity * movement_sensetivity,
           drive_controller.getRightX() * turn_sensetivity, gyroangle);
     }
-  
+
   } // ends teleop
 
-  //This function is called once when the robot is disabled. *
+  // This function is called once when the robot is disabled. *
   @Override
   public void disabledInit() {
   }
 
-  //This function is called periodically when disabled. *
+  // This function is called periodically when disabled. *
   @Override
   public void disabledPeriodic() {
   }
 
-  //This function is called once when test mode is enabled. *
+  // This function is called once when test mode is enabled. *
   @Override
   public void testInit() {
   }
 
-  //This function is called periodically during test mode. *
+  // This function is called periodically during test mode. *
   @Override
   public void testPeriodic() {
   }
 
-  //This function is called once when the robot is first started up. *
+  // This function is called once when the robot is first started up. *
   @Override
   public void simulationInit() {
   }
 
-  //This function is called periodically whilst in simulation. *
+  // This function is called periodically whilst in simulation. *
   @Override
   public void simulationPeriodic() {
   }
