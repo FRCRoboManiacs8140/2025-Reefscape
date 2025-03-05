@@ -251,6 +251,11 @@ public class Robot extends TimedRobot {
   public void teleopInit() {
     gyro.reset();
     elevator_encoder.equals(0);
+    rightBack.set(0);
+    leftBack.set(0);
+    rightFront.set(0);
+    leftFront.set(0);
+
   }
 
   // This function is called periodically during operator control. *
