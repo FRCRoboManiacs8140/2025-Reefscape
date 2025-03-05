@@ -55,6 +55,9 @@ public class Robot extends TimedRobot {
   private final SparkMax elevatorRight = new SparkMax(3, MotorType.kBrushless);
   private final SparkMax elevatorLeft = new SparkMax(5, MotorType.kBrushless);
 
+  private final SparkMax endEffectorLeft = new SparkMax(7, MotorType.kBrushless);
+  private final SparkMax endEffectorRight = new SparkMax(8, MotorType.kBrushless);
+
   // private final MecanumDrive drive = new MecanumDrive(leftFront, leftBack,
   // rightFront, rightBack);
   private final MecanumDrive drive = new MecanumDrive(leftFront, leftBack, rightFront, rightBack);
@@ -287,6 +290,14 @@ public class Robot extends TimedRobot {
       elevatorLeft.set(0);
     }
 
+    // Code for End Effector
+    if (opController.getXButton()){
+      endEffectorLeft.set(.5);
+      endEffectorRight.set(.5);
+    } else {
+      endEffectorLeft.set(0);
+      endEffectorRight.set(.0);
+    }
   }
 
   // Runs the limelight function
