@@ -196,14 +196,11 @@ public class Robot extends TimedRobot {
       case kLeftAuto:
         if (autoTime > 0 && autoTime < 5) {
 
-        }
-        if (autoTime > 5 && autoTime < 10) {
+        } else if (autoTime > 5 && autoTime < 10) {
 
-        }
-        if (autoTime > 10 && autoTime < 15) {
+        } else if (autoTime > 10 && autoTime < 15) {
 
-        }
-        if (autoTime > 15) {
+        } else if (autoTime > 15) {
           // Stop moving if time becomes more than 15
           drive.driveCartesian(0, 0, 0);
           // Needs code that switches mode to Teleop when time is over 15 seconds.
@@ -212,9 +209,13 @@ public class Robot extends TimedRobot {
 
       // If Front Auto is selected . . .
       case kFrontAuto:
-        // Drive Forward for 2 seconds at 25% speed
         if (autoTime > 0 && autoTime < 2) {
+          // Drive Forward for 2 seconds at 25% speed
           drive.driveCartesian(-0.25, 0, 0);
+        } else if (autoTime > 2 && autoTime < 5){
+          // Eject coral onto L1
+          endEffectorLeft.set(.6);
+          endEffectorRight.set(-.3);
         }
         break;
 
@@ -222,14 +223,11 @@ public class Robot extends TimedRobot {
       case kRightAuto:
         if (autoTime > 0 && autoTime < 5) {
 
-        }
-        if (autoTime > 5 && autoTime < 10) {
+        } else if (autoTime > 5 && autoTime < 10) {
 
-        }
-        if (autoTime > 10 && autoTime < 15) {
+        } else if (autoTime > 10 && autoTime < 15) {
 
-        }
-        if (autoTime > 15) {
+        } else if (autoTime > 15) {
           // Stop moving if time becomes more than 15
           drive.driveCartesian(0, 0, 0);
           // Needs code that switches mode to Teleop when time is over 15 seconds.
