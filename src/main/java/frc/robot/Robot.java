@@ -42,6 +42,7 @@ public class Robot extends TimedRobot {
   private static final String kFrontAuto = "Front Auto";
   private static final String kLeftAuto = "Left Auto";
   private static final String kRightAuto = "Right Auto";
+  private static final String kPushRobot = "Push Robot Auto";
 
   private String m_autoSelected;
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
@@ -89,6 +90,7 @@ public class Robot extends TimedRobot {
     m_chooser.setDefaultOption("Front Auto", kFrontAuto);
     m_chooser.addOption("Left Auto", kLeftAuto);
     m_chooser.addOption("Right Auto", kRightAuto);
+    m_chooser.addOption("Push Robot", kPushRobot);
 
     SmartDashboard.putData("Auto choices", m_chooser);
     SmartDashboard.putNumber("drive_reduction", 1);
@@ -218,6 +220,14 @@ public class Robot extends TimedRobot {
           endEffectorRight.set(-.3);
         }
         break;
+
+      case kPushRobot:
+       // Move forward for 4 seconds at higher speed
+       if (autoTime > 0 && autoTime < 4){
+        drive.driveCartesian(-0.5,0,0);
+       }
+
+       break;
 
       // If right Auto is selected . . .
       case kRightAuto:
