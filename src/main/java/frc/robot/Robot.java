@@ -291,9 +291,19 @@ public class Robot extends TimedRobot {
     }
 
     // Code for End Effector
+    // If X is held eject coral
     if (opController.getXButton()){
-      endEffectorLeft.set(.5);
-      endEffectorRight.set(.5);
+      endEffectorLeft.set(-.3);
+      endEffectorRight.set(.3);
+    // If B is held pull coral in
+    } else if (opController.getBButton()){
+      endEffectorLeft.set(.3);
+      endEffectorRight.set(-.3);
+    // If Left Stick is pressed eject for L1, Spun so that the coral lands parrallel to the trough
+    } else if (opController.getLeftStickButton()){
+      endEffectorLeft.set(.6);
+      endEffectorRight.set(-.3);
+    // If nothing is held the End Effector does not spin
     } else {
       endEffectorLeft.set(0);
       endEffectorRight.set(.0);
