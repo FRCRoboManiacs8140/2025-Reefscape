@@ -44,7 +44,7 @@ public class LimelightControls {
       SmartDashboard.putNumber("Rotation", botpose[5] * 0.025);
     } catch (Exception e) {
     }
-
+    
     double turn = tx * -.005;
     double strafe = tx * -.025;
     double movePoint = 5;
@@ -57,7 +57,9 @@ public class LimelightControls {
     Rotation2d gyroangle = Rotation2d.fromDegrees(-gyro.getAngle());
     double movement_sensetivity = SmartDashboard.getNumber("drive_reduction", 1);
     double turn_sensetivity = 1;
-
+    if (drive_controller.getAButton()){
+      gyro.reset();
+    }
     if (drive_controller.getLeftBumper()) {
       NetworkTableInstance.getDefault().getTable("limelight").getEntry("pipeline").setNumber(1);
       if (tv == 1) {
@@ -73,17 +75,17 @@ public class LimelightControls {
           drive.driveCartesian(drive_controller.getLeftY() * movement_sensetivity, -drive_controller.getLeftX() * movement_sensetivity, -drive_controller.getRightX() * turn_sensetivity, gyroangle);
         }
       }
-    } else if (drive_controller.getAButton()) {
+    } else if (drive_controller.getBButton()) {
       double current_angle = gyro.getAngle();
       drive.driveCartesian(-.05, -0.3, anglePreserve.calculate(gyro.getRate(), 0), Rotation2d.fromDegrees(0));
-    } else if (drive_controller.getYButton()) {
+    } else if (drive_controller.getXButton()) {
       double current_angle = gyro.getAngle();
       drive.driveCartesian(-.05, 0.3, anglePreserve.calculate(gyro.getRate(), 0), Rotation2d.fromDegrees(0));
-    } else if (drive_controller.getBButton()) {
+    } else if (drive_controller.getYButton()) {
       if (tv == 1) {
         drive.driveCartesian(travelToController.calculate(ta, movePoint) * -1, 0, 0);
       }
-    } else if (drive_controller.getXButton()) {
+    } else if (drive_controller.getLeftStickButton()) {
       drive.driveCartesian(0, 0, turnController.calculate(gyro.getAngle() % 360, tagAngle));
     } else if (drive_controller.getRightTriggerAxis() >= 0.2) {
       NetworkTableInstance.getDefault().getTable("limelight").getEntry("pipeline").setNumber(3);
