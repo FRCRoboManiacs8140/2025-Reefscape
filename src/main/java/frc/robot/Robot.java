@@ -465,7 +465,7 @@ public class Robot extends TimedRobot {
               // Strafe to the April tag
               0,
               MathUtil.clamp(strafeController.calculate(tx, 0), -0.5, 0.8),
-              botpose[5] * .0005);
+              turnController.calculate(gyro.getAngle() % 360, tagAngle));
           // Set robot to manual controll if the robot can't see a April tag
         } catch (Exception e) {
           drive.driveCartesian(
@@ -506,6 +506,30 @@ public class Robot extends TimedRobot {
     }
 
   } // ends teleop
+  private double getTagAngle(int id) {
+    switch (id) {
+      case 7:
+      case 18:
+        return 0;
+      case 6:
+      case 19:
+        return 60;
+      case 11:
+      case 20:
+        return 120;
+      case 10:
+      case 21:
+        return 180;
+      case 9:
+      case 22:
+        return 240;
+      case 8:
+      case 17:
+        return 300;
+      default:
+        return 0;
+    }
+  }
 
   // This function is called once when the robot is disabled. *
   @Override
