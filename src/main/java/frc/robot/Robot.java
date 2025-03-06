@@ -246,6 +246,32 @@ public class Robot extends TimedRobot {
     }
   }
 
+  private double getTagAngle(int id) {
+    switch (id) {
+      case 7:
+      case 18:
+        return 0;
+      case 6:
+      case 19:
+        return 60;
+      case 11:
+      case 20:
+        return 120;
+      case 10:
+      case 21:
+        return 180;
+      case 9:
+      case 22:
+        return 240;
+      case 8:
+      case 17:
+        return 300;
+      default:
+        return 0;
+    }
+  }
+  int id = NetworkTableInstance.getDefault().getTable("limelight").getEntry("tid").getNumber(0).intValue();
+  double tagAngle = getTagAngle(id);
   // This function is called once when teleop is enabled. *
   @Override
   public void teleopInit() {
@@ -506,30 +532,7 @@ public class Robot extends TimedRobot {
     }
 
   } // ends teleop
-  private double getTagAngle(int id) {
-    switch (id) {
-      case 7:
-      case 18:
-        return 0;
-      case 6:
-      case 19:
-        return 60;
-      case 11:
-      case 20:
-        return 120;
-      case 10:
-      case 21:
-        return 180;
-      case 9:
-      case 22:
-        return 240;
-      case 8:
-      case 17:
-        return 300;
-      default:
-        return 0;
-    }
-  }
+
 
   // This function is called once when the robot is disabled. *
   @Override
