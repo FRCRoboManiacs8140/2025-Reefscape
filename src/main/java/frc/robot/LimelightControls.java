@@ -32,7 +32,7 @@ public class LimelightControls {
     PIDController strafeController = new PIDController(kP, kI, kD);
     strafeController.setIntegratorRange(-5, 5);
     strafeController.setIZone(1);
-    PIDController turnController = new PIDController(.02, .1, 0);
+    PIDController turnController = new PIDController(.01, .2, 0);
     PIDController anglePreserve = new PIDController(.01, .1, 0);
 
     SmartDashboard.putNumber("Target X", tx);
@@ -57,9 +57,9 @@ public class LimelightControls {
     Rotation2d gyroangle = Rotation2d.fromDegrees(-gyro.getAngle());
     double movement_sensetivity = SmartDashboard.getNumber("drive_reduction", 1);
     double turn_sensetivity = 1;
-    if (drive_controller.getAButton()){
+    /*if (drive_controller.getAButton()){
       gyro.reset();
-    }
+    }*/
     if (drive_controller.getLeftBumper()) {
       NetworkTableInstance.getDefault().getTable("limelight").getEntry("pipeline").setNumber(1);
       if (tv == 1) {
