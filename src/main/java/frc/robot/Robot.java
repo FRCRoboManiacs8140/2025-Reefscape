@@ -282,19 +282,19 @@ public class Robot extends TimedRobot {
       // IMPORTANT setpoints for opController levels need to be set and tuned!
 
       // Right Bumper is L1
-    } else if (opController.getRightBumperButton()) {
+    } else if (opController.getAButton()) {
       elevatorLeft.set(elevatorPID.calculate(elevator_encoder.getPosition(), 30));
       elevatorRight.set(elevatorPID.calculate(elevator_encoder.getPosition(), 30));
       // Left Bummper is L2
-    } else if (opController.getLeftBumperButton()) {
+    } else if (opController.getXButton()) {
       elevatorLeft.set(elevatorPID.calculate(elevator_encoder.getPosition(), 40));
       elevatorRight.set(elevatorPID.calculate(elevator_encoder.getPosition(), 40));
       // Right Trigger is L3
-    } else if (opController.getRightTriggerAxis() > 0.2) {
+    } else if (opController.getYButton()) {
       elevatorLeft.set(elevatorPID.calculate(elevator_encoder.getPosition(), 60));
       elevatorRight.set(elevatorPID.calculate(elevator_encoder.getPosition(), 60));
       // Left Trigger is L4
-    } else if (opController.getLeftTriggerAxis() > 0.2) {
+    } else if (opController.getBButton()) {
       elevatorLeft.set(elevatorPID.calculate(elevator_encoder.getPosition(), 100));
       elevatorRight.set(elevatorPID.calculate(elevator_encoder.getPosition(), 100));
     } else {
@@ -304,18 +304,22 @@ public class Robot extends TimedRobot {
     }
 
     // Code for End Effector
-    // If X is held eject coral
-    if (opController.getXButton()){
-      endEffectorLeft.set(-.3);
-      endEffectorRight.set(.3);
-    // If B is held pull coral in
-    } else if (opController.getBButton()){
-      endEffectorLeft.set(.3);
-      endEffectorRight.set(-.3);
-    // If Left Stick is pressed eject for L1, Spun so that the coral lands parrallel to the trough
-    } else if (opController.getLeftStickButton()){
+    // If X is held intake coral
+    if (opController.getLeftTriggerAxis() > 0.2){
+      endEffectorLeft.set(-.1);
+      endEffectorRight.set(.1);
+    // Left Bumper shoots for L1
+    } else if(opController.getLeftBumperButton()){
       endEffectorLeft.set(.6);
       endEffectorRight.set(-.3);
+    // Right Bumper is to eject coral
+    }else if (opController.getRightBumperButton()){
+      endEffectorLeft.set(.5);
+      endEffectorRight.set(-.5);
+    // If Left Stick is pressed eject coral
+    } else if (opController.getRightTriggerAxis() > 0.2){
+      endEffectorLeft.set(-.5);
+      endEffectorRight.set(.5);
     // If nothing is held the End Effector does not spin
     } else {
       endEffectorLeft.set(0);
