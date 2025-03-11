@@ -312,9 +312,9 @@ public class Robot extends TimedRobot {
       elevatorLeft.set(elevatorPID.calculate(elevator_encoder.getPosition(), 60));
       elevatorRight.set(elevatorPID.calculate(elevator_encoder.getPosition(), 60));
       // Left Trigger is L4
-    } else if (opController.getBButton()) {
-      elevatorLeft.set(elevatorPID.calculate(elevator_encoder.getPosition(), 100));
-      elevatorRight.set(elevatorPID.calculate(elevator_encoder.getPosition(), 100));
+    // } else if (opController.getBButton()) {
+    //   elevatorLeft.set(elevatorPID.calculate(elevator_encoder.getPosition(), 100));
+    //   elevatorRight.set(elevatorPID.calculate(elevator_encoder.getPosition(), 100));
     } else {
       // Stop the elevator from moving if no buttons are being held
       elevatorLeft.set(0);
