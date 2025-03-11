@@ -86,7 +86,9 @@ public class LimelightControls {
         drive.driveCartesian(travelToController.calculate(ta, movePoint) * -1, 0, 0);
       }
     } else if (drive_controller.getLeftStickButton()) {
+      if (tv == 1) {
       drive.driveCartesian(0, 0, turnController.calculate(gyro.getAngle() % 360, tagAngle));
+      }
     } else if (drive_controller.getRightTriggerAxis() >= 0.2) {
       NetworkTableInstance.getDefault().getTable("limelight").getEntry("pipeline").setNumber(3);
       if (tv == 1) {
