@@ -43,6 +43,7 @@ public class Robot extends TimedRobot {
   private static final String kLeftAuto = "Left Auto";
   private static final String kRightAuto = "Right Auto";
   private static final String kPushRobot = "Push Robot Auto";
+  private static final String kjustMoveForward = "Just Move Forward";
 
   private String m_autoSelected;
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
@@ -91,6 +92,7 @@ public class Robot extends TimedRobot {
     m_chooser.addOption("Left Auto", kLeftAuto);
     m_chooser.addOption("Right Auto", kRightAuto);
     m_chooser.addOption("Push Robot", kPushRobot);
+    m_chooser.addOption("Just Move Forward", kjustMoveForward);
 
     SmartDashboard.putData("Auto choices", m_chooser);
     SmartDashboard.putNumber("drive_reduction", 1);
@@ -191,18 +193,23 @@ public class Robot extends TimedRobot {
     strafeController.setIntegratorRange(-5, 5);
     strafeController.setIZone(1);
 
+    PIDController anglePreserve = new PIDController(.01, .1, 0);
+    PIDController elevatorPID = new PIDController(0.05, 0, 0);
     NetworkTableInstance.getDefault().getTable("limelight").getEntry("pipeline").setNumber(0);
 
     switch (m_autoSelected) {
       // If Left Auto is selected . . .
       case kLeftAuto:
+      NetworkTableInstance.getDefault().getTable("limelight").getEntry("pipeline").setNumber(2);
         if (autoTime > 0 && autoTime < 5) {
-
-        } else if (autoTime > 5 && autoTime < 10) {
-
-        } else if (autoTime > 10 && autoTime < 15) {
-
-        } else if (autoTime > 15) {
+          drive.driveCartesian(-.3, strafeController.calculate(tx, 0), anglePreserve.calculate(gyro.getRate(), 0));
+        } else if (autoTime > 5 && autoTime < 8) {
+          elevatorLeft.set(elevatorPID.calculate(elevator_encoder.getPosition(), 60));
+          elevatorRight.set(elevatorPID.calculate(elevator_encoder.getPosition(), 60));
+        } else if (autoTime > 8 && autoTime < 10) {
+          endEffectorLeft.set(.5);
+          endEffectorRight.set(-.5);
+        } else if (autoTime > 10) {
           // Stop moving if time becomes more than 15
           drive.driveCartesian(0, 0, 0);
           // Needs code that switches mode to Teleop when time is over 15 seconds.
@@ -223,7 +230,7 @@ public class Robot extends TimedRobot {
 
       case kPushRobot:
        // Move forward for 4 seconds at higher speed
-       if (autoTime > 0 && autoTime < 4){
+       if (autoTime > 0 && autoTime < 2){
         drive.driveCartesian(-0.5,0,0);
        }
 
@@ -231,17 +238,28 @@ public class Robot extends TimedRobot {
 
       // If right Auto is selected . . .
       case kRightAuto:
-        if (autoTime > 0 && autoTime < 5) {
+      NetworkTableInstance.getDefault().getTable("limelight").getEntry("pipeline").setNumber(3);
+      if (autoTime > 0 && autoTime < 5) {
+        drive.driveCartesian(-.3, strafeController.calculate(tx, 0), anglePreserve.calculate(gyro.getRate(), 0));
+      } else if (autoTime > 5 && autoTime < 8) {
+        elevatorLeft.set(elevatorPID.calculate(elevator_encoder.getPosition(), 60));
+        elevatorRight.set(elevatorPID.calculate(elevator_encoder.getPosition(), 60));
+      } else if (autoTime > 8 && autoTime < 10) {
+        endEffectorLeft.set(.5);
+        endEffectorRight.set(-.5);
+      } else if (autoTime > 10) {
+        // Stop moving if time becomes more than 15
+        drive.driveCartesian(0, 0, 0);
+        // Needs code that switches mode to Teleop when time is over 15 seconds.
+      }
+      break;
 
-        } else if (autoTime > 5 && autoTime < 10) {
-
-        } else if (autoTime > 10 && autoTime < 15) {
-
-        } else if (autoTime > 15) {
-          // Stop moving if time becomes more than 15
-          drive.driveCartesian(0, 0, 0);
-          // Needs code that switches mode to Teleop when time is over 15 seconds.
+      case kjustMoveForward:
+        // Move forward for 4 seconds at higher speed
+        if (autoTime > 0 && autoTime < 2){
+         drive.driveCartesian(-0.3,0,0);
         }
+ 
         break;
     }
   }
@@ -266,7 +284,7 @@ public class Robot extends TimedRobot {
     if (drive_controller.getAButton()) {
       gyro.reset();
     }
-    PIDController elevatorPID = new PIDController(0.1, 0, 0);
+    PIDController elevatorPID = new PIDController(0.05, 0, 0);
     SmartDashboard.putNumber("Elevator Position", elevator_encoder.getPosition());
     // double elevator_encoder_teleop = SmartDashboard.getNumber("Elevator
     // Position", elevator_encoder.getPosition());
@@ -306,8 +324,8 @@ public class Robot extends TimedRobot {
     // Code for End Effector
     // If X is held intake coral
     if (opController.getLeftTriggerAxis() > 0.2){
-      endEffectorLeft.set(-.1);
-      endEffectorRight.set(.1);
+      endEffectorLeft.set(-.07);
+      endEffectorRight.set(.07);
     // Left Bumper shoots for L1
     } else if(opController.getLeftBumperButton()){
       endEffectorLeft.set(.6);
