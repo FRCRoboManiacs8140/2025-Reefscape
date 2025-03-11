@@ -90,6 +90,31 @@ public class Robot extends TimedRobot {
   double L2Position = 40;
   double L3Position = 60;
 
+//   public static double getTagAngle(int id) {
+//     switch (id) {
+//       case 7:
+//       case 18:
+//         return 0;
+//       case 6:
+//       case 19:
+//         return 60;
+//       case 11:
+//       case 20:
+//         return 120;
+//       case 10:
+//       case 21:
+//         return 180;
+//       case 9:
+//       case 22:
+//         return 240;
+//       case 8:
+//       case 17:
+//         return 300;
+//       default:
+//         return 0;
+//     }
+// }
+
 
   // CameraServer server;
 
