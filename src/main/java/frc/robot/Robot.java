@@ -89,6 +89,7 @@ public class Robot extends TimedRobot {
   double L1Position = 30;
   double L2Position = 40;
   double L3Position = 60;
+  double intakePosition = 5;
 
   public static double getTagAngle(int id) {
     switch (id) {
@@ -343,6 +344,7 @@ public class Robot extends TimedRobot {
       gyro.reset();
     }
     PIDController elevatorPID = new PIDController(0.05, 0, 0);
+    PIDController elevatorbottomPID = new PIDController(0.025, 0, 0);
     SmartDashboard.putNumber("Elevator Position", elevator_encoder.getPosition());
     // double elevator_encoder_teleop = SmartDashboard.getNumber("Elevator
     // Position", elevator_encoder.getPosition());
@@ -373,6 +375,11 @@ public class Robot extends TimedRobot {
     // } else if (opController.getBButton()) {
     //   elevatorLeft.set(elevatorPID.calculate(elevator_encoder.getPosition(), 100));
     //   elevatorRight.set(elevatorPID.calculate(elevator_encoder.getPosition(), 100));
+
+    // Returns to bottom for intaking
+    } else if (opController.getBButton()) {
+      elevatorLeft.set(elevatorbottomPID.calculate(elevator_encoder.getPosition(), intakePosition));
+      elevatorRight.set(elevatorPID.calculate(elevator_encoder.getPosition(), intakePosition));
     } else {
       // Stop the elevator from moving if no buttons are being held
       elevatorLeft.set(0);
