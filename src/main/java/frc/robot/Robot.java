@@ -90,30 +90,30 @@ public class Robot extends TimedRobot {
   double L2Position = 40;
   double L3Position = 60;
 
-//   public static double getTagAngle(int id) {
-//     switch (id) {
-//       case 7:
-//       case 18:
-//         return 0;
-//       case 6:
-//       case 19:
-//         return 60;
-//       case 11:
-//       case 20:
-//         return 120;
-//       case 10:
-//       case 21:
-//         return 180;
-//       case 9:
-//       case 22:
-//         return 240;
-//       case 8:
-//       case 17:
-//         return 300;
-//       default:
-//         return 0;
-//     }
-// }
+  public static double getTagAngle(int id) {
+    switch (id) {
+      case 7:
+      case 18:
+        return 0;
+      case 6:
+      case 19:
+        return 60;
+      case 11:
+      case 20:
+        return 120;
+      case 10:
+      case 21:
+        return 180;
+      case 9:
+      case 22:
+        return 240;
+      case 8:
+      case 17:
+        return 300;
+      default:
+        return 0;
+    }
+}
 
 
   // CameraServer server;
@@ -421,6 +421,7 @@ public class Robot extends TimedRobot {
         .getDoubleArray(new double[6]);
     double campose[] = NetworkTableInstance.getDefault().getTable("limelight").getEntry("campose")
         .getDoubleArray(new double[6]);
+    //double id = NetworkTableInstance.getDefault().getTable("limelight").getEntry("id").getDouble(0);
 
     // values for travel to; PID
     double tkI = SmartDashboard.getNumber("travel_to_integral_PID", 0.);
@@ -487,6 +488,11 @@ public class Robot extends TimedRobot {
         // Drive towards nearest Algea Gamepiece
         drive.driveCartesian(travelTo, strafe, turn);
       }
+      // else if (drive_controller.getLeftBumper()) {
+      //   if (tv == 1) {
+      //     getTagAngle(id)
+      //   drive.driveCartesian(0, 0, turnController.calculate(gyro.getAngle() % 360, tagAngle));
+      //   }
       // Defines what happens when you press RightBumper
     } else if (drive_controller.getRightBumper()) {
       current_angle = gyro.getAngle();
