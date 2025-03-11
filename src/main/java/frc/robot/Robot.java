@@ -421,7 +421,9 @@ public class Robot extends TimedRobot {
         .getDoubleArray(new double[6]);
     double campose[] = NetworkTableInstance.getDefault().getTable("limelight").getEntry("campose")
         .getDoubleArray(new double[6]);
-    //double id = NetworkTableInstance.getDefault().getTable("limelight").getEntry("id").getDouble(0);
+    int id = NetworkTableInstance.getDefault().getTable("limelight").getEntry("tid").getNumber(0).intValue();
+    double tagAngle = getTagAngle(id);
+    
 
     // values for travel to; PID
     double tkI = SmartDashboard.getNumber("travel_to_integral_PID", 0.);
@@ -489,9 +491,17 @@ public class Robot extends TimedRobot {
         drive.driveCartesian(travelTo, strafe, turn);
       }
       // else if (drive_controller.getLeftBumper()) {
+      //   NetworkTableInstance.getDefault().getTable("limelight").getEntry("pipeline").setNumber(2);
       //   if (tv == 1) {
-      //     getTagAngle(id)
+      //     getTagAngle(id);
       //   drive.driveCartesian(0, 0, turnController.calculate(gyro.getAngle() % 360, tagAngle));
+      //   }
+      //   if (Math.abs(gyro.getAngle() - tagAngle) < .5){
+      //     drive.driveCartesian(0, strafeController.calculate(tx, 0), anglePreserve.calculate(gyro.getAngle(), 0));
+      //   }
+      //   if (tx < .5) {
+      //     drive.driveCartesian(.3, 0, anglePreserve.calculate(gyro.getAngle(), 0));
+      //   }
       //   }
       // Defines what happens when you press RightBumper
     } else if (drive_controller.getRightBumper()) {
