@@ -45,8 +45,15 @@ public class Robot extends TimedRobot {
   private static final String kPushRobot = "Push Robot Auto";
   private static final String kjustMoveForward = "Just Move Forward";
 
+  private static final String levelOne = "L1";
+  private static final String levelTwo = "L2";
+  private static final String levelThree = "L3";
+
   private String m_autoSelected;
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
+
+  private String m_levelSelected;
+  private final SendableChooser<String> m_levelChooser = new SendableChooser<>();
 
   // Define motors
   private final SparkMax leftFront = new SparkMax(6, MotorType.kBrushless);
@@ -77,6 +84,12 @@ public class Robot extends TimedRobot {
   public double strafeStartTime = 0;
   public double second = 1;
   public double lastSecond = 0;
+  public double autoElevatorHeight = 60;
+
+  double L1Position = 30;
+  double L2Position = 40;
+  double L3Position = 60;
+
 
   // CameraServer server;
 
@@ -94,7 +107,13 @@ public class Robot extends TimedRobot {
     m_chooser.addOption("Push Robot", kPushRobot);
     m_chooser.addOption("Just Move Forward", kjustMoveForward);
 
+    m_levelChooser.setDefaultOption("L3", levelThree);
+    m_levelChooser.addOption("L2", levelTwo);
+    m_levelChooser.addOption("L1", levelOne);
+    
+
     SmartDashboard.putData("Auto choices", m_chooser);
+    SmartDashboard.putData("Auto score level", m_levelChooser);
     SmartDashboard.putNumber("drive_reduction", 1);
 
     CameraServer.startAutomaticCapture();
@@ -152,11 +171,11 @@ public class Robot extends TimedRobot {
   public void autonomousInit() {
     // Select which autonomous routine
     m_autoSelected = m_chooser.getSelected();
+    m_levelSelected = m_levelChooser.getSelected();
     System.out.println("Auto selected: " + m_autoSelected);
     SmartDashboard.putNumber("Drive Speed", .25);
 
     autonomousStartTime = Timer.getFPGATimestamp();
-
   }
 
   // This function is called periodically during autonomous. *
@@ -197,6 +216,20 @@ public class Robot extends TimedRobot {
     PIDController elevatorPID = new PIDController(0.05, 0, 0);
     NetworkTableInstance.getDefault().getTable("limelight").getEntry("pipeline").setNumber(0);
 
+    switch (m_levelSelected) {
+      case levelOne:
+        autoElevatorHeight = L1Position;
+        break;
+    
+      case levelTwo:
+        autoElevatorHeight = L2Position;
+        break;
+
+        case levelThree:
+        autoElevatorHeight = L3Position;
+        break;
+    }
+
     switch (m_autoSelected) {
       // If Left Auto is selected . . .
       case kLeftAuto:
@@ -204,8 +237,8 @@ public class Robot extends TimedRobot {
         if (autoTime > 0 && autoTime < 5) {
           drive.driveCartesian(-.3, strafeController.calculate(tx, 0), anglePreserve.calculate(gyro.getRate(), 0));
         } else if (autoTime > 5 && autoTime < 8) {
-          elevatorLeft.set(elevatorPID.calculate(elevator_encoder.getPosition(), 60));
-          elevatorRight.set(elevatorPID.calculate(elevator_encoder.getPosition(), 60));
+          elevatorLeft.set(elevatorPID.calculate(elevator_encoder.getPosition(), autoElevatorHeight));
+          elevatorRight.set(elevatorPID.calculate(elevator_encoder.getPosition(), autoElevatorHeight));
         } else if (autoTime > 8 && autoTime < 10) {
           endEffectorLeft.set(.5);
           endEffectorRight.set(-.5);
@@ -242,8 +275,8 @@ public class Robot extends TimedRobot {
       if (autoTime > 0 && autoTime < 5) {
         drive.driveCartesian(-.3, strafeController.calculate(tx, 0), anglePreserve.calculate(gyro.getRate(), 0));
       } else if (autoTime > 5 && autoTime < 8) {
-        elevatorLeft.set(elevatorPID.calculate(elevator_encoder.getPosition(), 60));
-        elevatorRight.set(elevatorPID.calculate(elevator_encoder.getPosition(), 60));
+        elevatorLeft.set(elevatorPID.calculate(elevator_encoder.getPosition(), autoElevatorHeight));
+        elevatorRight.set(elevatorPID.calculate(elevator_encoder.getPosition(), autoElevatorHeight));
       } else if (autoTime > 8 && autoTime < 10) {
         endEffectorLeft.set(.5);
         endEffectorRight.set(-.5);
@@ -301,16 +334,16 @@ public class Robot extends TimedRobot {
 
       // Right Bumper is L1
     } else if (opController.getAButton()) {
-      elevatorLeft.set(elevatorPID.calculate(elevator_encoder.getPosition(), 30));
-      elevatorRight.set(elevatorPID.calculate(elevator_encoder.getPosition(), 30));
+      elevatorLeft.set(elevatorPID.calculate(elevator_encoder.getPosition(), L1Position));
+      elevatorRight.set(elevatorPID.calculate(elevator_encoder.getPosition(), L1Position));
       // Left Bummper is L2
     } else if (opController.getXButton()) {
-      elevatorLeft.set(elevatorPID.calculate(elevator_encoder.getPosition(), 40));
-      elevatorRight.set(elevatorPID.calculate(elevator_encoder.getPosition(), 40));
+      elevatorLeft.set(elevatorPID.calculate(elevator_encoder.getPosition(), L2Position));
+      elevatorRight.set(elevatorPID.calculate(elevator_encoder.getPosition(), L2Position));
       // Right Trigger is L3
     } else if (opController.getYButton()) {
-      elevatorLeft.set(elevatorPID.calculate(elevator_encoder.getPosition(), 60));
-      elevatorRight.set(elevatorPID.calculate(elevator_encoder.getPosition(), 60));
+      elevatorLeft.set(elevatorPID.calculate(elevator_encoder.getPosition(), L3Position));
+      elevatorRight.set(elevatorPID.calculate(elevator_encoder.getPosition(), L3Position));
       // Left Trigger is L4
     // } else if (opController.getBButton()) {
     //   elevatorLeft.set(elevatorPID.calculate(elevator_encoder.getPosition(), 100));
