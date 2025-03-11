@@ -235,7 +235,7 @@ public class Robot extends TimedRobot {
       case kLeftAuto:
       NetworkTableInstance.getDefault().getTable("limelight").getEntry("pipeline").setNumber(2);
         if (autoTime > 0 && autoTime < 5) {
-          drive.driveCartesian(-.3, strafeController.calculate(tx, 0), anglePreserve.calculate(gyro.getRate(), 0));
+          drive.driveCartesian(-.3, tx*-.025, anglePreserve.calculate(gyro.getRate(), 0));
         } else if (autoTime > 5 && autoTime < 8) {
           elevatorLeft.set(elevatorPID.calculate(elevator_encoder.getPosition(), autoElevatorHeight));
           elevatorRight.set(elevatorPID.calculate(elevator_encoder.getPosition(), autoElevatorHeight));
@@ -273,7 +273,7 @@ public class Robot extends TimedRobot {
       case kRightAuto:
       NetworkTableInstance.getDefault().getTable("limelight").getEntry("pipeline").setNumber(3);
       if (autoTime > 0 && autoTime < 5) {
-        drive.driveCartesian(-.3, strafeController.calculate(tx, 0), anglePreserve.calculate(gyro.getRate(), 0));
+        drive.driveCartesian(-.3, tx*-.025, anglePreserve.calculate(gyro.getRate(), 0));
       } else if (autoTime > 5 && autoTime < 8) {
         elevatorLeft.set(elevatorPID.calculate(elevator_encoder.getPosition(), autoElevatorHeight));
         elevatorRight.set(elevatorPID.calculate(elevator_encoder.getPosition(), autoElevatorHeight));
