@@ -86,9 +86,9 @@ public class Robot extends TimedRobot {
   public double lastSecond = 0;
   public double autoElevatorHeight = 60;
 
-  double L1Position = 30;
-  double L2Position = 40;
-  double L3Position = 60;
+  double L1Position = 3;
+  double L2Position = 18;
+  double L3Position = 58;
   double intakePosition = 5;
 
   public static double getTagAngle(int id) {
@@ -277,10 +277,10 @@ public class Robot extends TimedRobot {
 
       // If Front Auto is selected . . .
       case kFrontAuto:
-        if (autoTime > 0 && autoTime < 2) {
+        if (autoTime > 0 && autoTime < 5) {
           // Drive Forward for 2 seconds at 25% speed
-          drive.driveCartesian(-0.25, 0, 0);
-        } else if (autoTime > 2 && autoTime < 5){
+          drive.driveCartesian(0.25, 0, anglePreserve.calculate(gyro.getRate(), 0));
+        } else if (autoTime > 5 && autoTime < 7){
           // Eject coral onto L1
           endEffectorLeft.set(.6);
           endEffectorRight.set(-.3);
@@ -316,7 +316,7 @@ public class Robot extends TimedRobot {
       case kjustMoveForward:
         // Move forward for 4 seconds at higher speed
         if (autoTime > 0 && autoTime < 2){
-         drive.driveCartesian(-0.3,0,0);
+         drive.driveCartesian(0.3,0,0);
         }
  
         break;
@@ -349,11 +349,11 @@ public class Robot extends TimedRobot {
     // double elevator_encoder_teleop = SmartDashboard.getNumber("Elevator
     // Position", elevator_encoder.getPosition());
     // Y makes elevator go up manually
-    if (opController.getYButton()) {
+    if (opController.getPOV() == 0) {
       elevatorLeft.set(0.1);
       elevatorRight.set(0.1);
       // A makes elevator go up manually
-    } else if (opController.getAButton()) {
+    } else if (opController.getPOV() == 180) {
       elevatorLeft.set(-0.1);
       elevatorRight.set(-0.1);
 
@@ -387,23 +387,23 @@ public class Robot extends TimedRobot {
     }
 
     // Code for End Effector
-    
+
     // When Left Trigger is held intake coral
     if (opController.getLeftTriggerAxis() > 0.2){
-      endEffectorLeft.set(-.07);
-      endEffectorRight.set(.07);
+      endEffectorLeft.set(.07);
+      endEffectorRight.set(-.07);
     // Left Bumper shoots for L1
     } else if(opController.getLeftBumperButton()){
       endEffectorLeft.set(.6);
       endEffectorRight.set(-.3);
     // Right Bumper is to eject coral
-    /*  }else if (opController.getRightBumperButton()){
+     }else if (opController.getRightBumperButton()){
+      endEffectorLeft.set(-.05);
+      endEffectorRight.set(.05);
+    // If Right Trigger is pressed eject coral 
+    } else if (opController.getRightTriggerAxis() > 0.2){
       endEffectorLeft.set(.5);
       endEffectorRight.set(-.5);
-    // If Right Trigger is pressed eject coral */
-    } else if (opController.getRightTriggerAxis() > 0.2){
-      endEffectorLeft.set(-.5);
-      endEffectorRight.set(.5);
     // If nothing is held the End Effector does not spin
     } else {
       endEffectorLeft.set(0);
