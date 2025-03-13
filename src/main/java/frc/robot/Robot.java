@@ -396,10 +396,10 @@ public class Robot extends TimedRobot {
       endEffectorLeft.set(.6);
       endEffectorRight.set(-.3);
     // Right Bumper is to eject coral
-    }else if (opController.getRightBumperButton()){
+    /*  }else if (opController.getRightBumperButton()){
       endEffectorLeft.set(.5);
       endEffectorRight.set(-.5);
-    // If Left Stick is pressed eject coral
+    // If Left Stick is pressed eject coral */
     } else if (opController.getRightTriggerAxis() > 0.2){
       endEffectorLeft.set(-.5);
       endEffectorRight.set(.5);
@@ -511,8 +511,8 @@ public class Robot extends TimedRobot {
       //   }
       //   }
       // Defines what happens when you press RightBumper
-    } else if (drive_controller.getRightBumper()) {
-      current_angle = gyro.getAngle();
+    //} else if (drive_controller.getRightBumper()) {
+      //current_angle = gyro.getAngle();
       // Go to April Tag Vision
       NetworkTableInstance.getDefault().getTable("limelight").getEntry("pipeline").setNumber(0);
       if (tv == 1) {
