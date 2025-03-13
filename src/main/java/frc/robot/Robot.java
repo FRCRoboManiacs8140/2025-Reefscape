@@ -387,7 +387,8 @@ public class Robot extends TimedRobot {
     }
 
     // Code for End Effector
-    // If X is held intake coral
+    
+    // When Left Trigger is held intake coral
     if (opController.getLeftTriggerAxis() > 0.2){
       endEffectorLeft.set(-.07);
       endEffectorRight.set(.07);
@@ -399,7 +400,7 @@ public class Robot extends TimedRobot {
     /*  }else if (opController.getRightBumperButton()){
       endEffectorLeft.set(.5);
       endEffectorRight.set(-.5);
-    // If Left Stick is pressed eject coral */
+    // If Right Trigger is pressed eject coral */
     } else if (opController.getRightTriggerAxis() > 0.2){
       endEffectorLeft.set(-.5);
       endEffectorRight.set(.5);
