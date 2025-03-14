@@ -263,8 +263,8 @@ public class Robot extends TimedRobot {
         if (autoTime > 0 && autoTime < 5) {
           drive.driveCartesian(-.3, tx*-.025, anglePreserve.calculate(gyro.getRate(), 0));
         } else if (autoTime > 5 && autoTime < 8) {
-          elevatorLeft.set(elevatorPID.calculate(elevator_encoder.getPosition(), autoElevatorHeight));
-          elevatorRight.set(elevatorPID.calculate(elevator_encoder.getPosition(), autoElevatorHeight));
+          elevatorLeft.set(elevatorPID.calculate(elevator_encoder.getPosition()*.5, autoElevatorHeight));
+          elevatorRight.set(elevatorPID.calculate(elevator_encoder.getPosition()*.5, autoElevatorHeight));
         } else if (autoTime > 8 && autoTime < 10) {
           endEffectorLeft.set(.5);
           endEffectorRight.set(-.5);
@@ -290,7 +290,7 @@ public class Robot extends TimedRobot {
       case kPushRobot:
        // Move forward for 4 seconds at higher speed
        if (autoTime > 0 && autoTime < 2){
-        drive.driveCartesian(-0.5,0,0);
+        drive.driveCartesian(0.5,0,0);
        }
 
        break;
@@ -301,8 +301,8 @@ public class Robot extends TimedRobot {
       if (autoTime > 0 && autoTime < 5) {
         drive.driveCartesian(-.3, tx*-.025, anglePreserve.calculate(gyro.getRate(), 0));
       } else if (autoTime > 5 && autoTime < 8) {
-        elevatorLeft.set(elevatorPID.calculate(elevator_encoder.getPosition(), autoElevatorHeight));
-        elevatorRight.set(elevatorPID.calculate(elevator_encoder.getPosition(), autoElevatorHeight));
+        elevatorLeft.set(elevatorPID.calculate(elevator_encoder.getPosition()*.5, autoElevatorHeight));
+        elevatorRight.set(elevatorPID.calculate(elevator_encoder.getPosition()*.5, autoElevatorHeight));
       } else if (autoTime > 8 && autoTime < 10) {
         endEffectorLeft.set(.5);
         endEffectorRight.set(-.5);
@@ -361,16 +361,16 @@ public class Robot extends TimedRobot {
 
       // Right Bumper is L1
     } else if (opController.getAButton()) {
-      elevatorLeft.set(elevatorPID.calculate(elevator_encoder.getPosition(), L1Position));
-      elevatorRight.set(elevatorPID.calculate(elevator_encoder.getPosition(), L1Position));
+      elevatorLeft.set(elevatorPID.calculate(elevator_encoder.getPosition()*.5, L1Position));
+      elevatorRight.set(elevatorPID.calculate(elevator_encoder.getPosition()*.5, L1Position));
       // Left Bummper is L2
     } else if (opController.getXButton()) {
-      elevatorLeft.set(elevatorPID.calculate(elevator_encoder.getPosition(), L2Position));
-      elevatorRight.set(elevatorPID.calculate(elevator_encoder.getPosition(), L2Position));
+      elevatorLeft.set(elevatorPID.calculate(elevator_encoder.getPosition()*.5, L2Position));
+      elevatorRight.set(elevatorPID.calculate(elevator_encoder.getPosition()*.5, L2Position));
       // Right Trigger is L3
     } else if (opController.getYButton()) {
-      elevatorLeft.set(elevatorPID.calculate(elevator_encoder.getPosition(), L3Position));
-      elevatorRight.set(elevatorPID.calculate(elevator_encoder.getPosition(), L3Position));
+      elevatorLeft.set(elevatorPID.calculate(elevator_encoder.getPosition()*.5, L3Position));
+      elevatorRight.set(elevatorPID.calculate(elevator_encoder.getPosition()*.5, L3Position));
       // Left Trigger is L4
     // } else if (opController.getBButton()) {
     //   elevatorLeft.set(elevatorPID.calculate(elevator_encoder.getPosition(), 100));
@@ -378,8 +378,8 @@ public class Robot extends TimedRobot {
 
     // Returns to bottom for intaking
     } else if (opController.getBButton()) {
-      elevatorLeft.set(elevatorbottomPID.calculate(elevator_encoder.getPosition(), intakePosition));
-      elevatorRight.set(elevatorPID.calculate(elevator_encoder.getPosition(), intakePosition));
+      elevatorLeft.set(elevatorbottomPID.calculate(elevator_encoder.getPosition()*.5, intakePosition));
+      elevatorRight.set(elevatorPID.calculate(elevator_encoder.getPosition()*.5, intakePosition));
     } else {
       // Stop the elevator from moving if no buttons are being held
       elevatorLeft.set(0);
@@ -470,7 +470,7 @@ public class Robot extends TimedRobot {
     // Values for porportional drive, algea
     double turn = tx * -.005;
     double strafe = tx * -.025;
-    double setPoint = 2;
+    double setPoint = 15;
 
     // what % of the limelight vision the april tag takes up
     double movePoint = 5;
@@ -568,7 +568,7 @@ public class Robot extends TimedRobot {
           drive.driveCartesian(
               // Strafe to the April tag
               0,
-              MathUtil.clamp(strafeController.calculate(tx, 0), -0.5, 0.8),
+              MathUtil.clamp(-strafeController.calculate(tx, 0), 0.5, 0.8),
               botpose[5] * .0005);
           // Set robot to manual controll if the robot can't see a April tag
         } catch (Exception e) {
@@ -588,7 +588,7 @@ public class Robot extends TimedRobot {
           // Strafe to the April tag
           drive.driveCartesian(
               0,
-              MathUtil.clamp(strafeController.calculate(tx, 0), -0.5, 0.8),
+              MathUtil.clamp(-strafeController.calculate(tx, 0), 0.5, 0.8),
               botpose[5] * .0005);
           // Set robot to manual control if the robot can't see a April tag
         } catch (Exception e) {
