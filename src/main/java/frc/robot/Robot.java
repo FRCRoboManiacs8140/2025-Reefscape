@@ -84,7 +84,7 @@ public class Robot extends TimedRobot {
   public double strafeStartTime = 0;
   public double second = 1;
   public double lastSecond = 0;
-  public double autoElevatorHeight = 60;
+  public double autoElevatorHeight = 58;
 
   double L1Position = 3;
   double L2Position = 18;
@@ -92,7 +92,7 @@ public class Robot extends TimedRobot {
   double intakePosition = 5;
 
   public static double getTagAngle(int id) {
-    switch (id) {
+    switch (id) {++
       case 7:
       case 18:
         return 0;
@@ -263,8 +263,8 @@ public class Robot extends TimedRobot {
         if (autoTime > 0 && autoTime < 5) {
           drive.driveCartesian(-.3, tx*-.025, anglePreserve.calculate(gyro.getRate(), 0));
         } else if (autoTime > 5 && autoTime < 8) {
-          elevatorLeft.set(elevatorPID.calculate(elevator_encoder.getPosition()*.5, autoElevatorHeight));
-          elevatorRight.set(elevatorPID.calculate(elevator_encoder.getPosition()*.5, autoElevatorHeight));
+          elevatorLeft.set(elevatorPID.calculate(elevator_encoder.getPosition(), autoElevatorHeight)*.5);
+          elevatorRight.set(elevatorPID.calculate(elevator_encoder.getPosition(), autoElevatorHeight)*.5);
         } else if (autoTime > 8 && autoTime < 10) {
           endEffectorLeft.set(.5);
           endEffectorRight.set(-.5);
@@ -301,8 +301,8 @@ public class Robot extends TimedRobot {
       if (autoTime > 0 && autoTime < 5) {
         drive.driveCartesian(-.3, tx*-.025, anglePreserve.calculate(gyro.getRate(), 0));
       } else if (autoTime > 5 && autoTime < 8) {
-        elevatorLeft.set(elevatorPID.calculate(elevator_encoder.getPosition()*.5, autoElevatorHeight));
-        elevatorRight.set(elevatorPID.calculate(elevator_encoder.getPosition()*.5, autoElevatorHeight));
+        elevatorLeft.set(elevatorPID.calculate(elevator_encoder.getPosition(), autoElevatorHeight)*.5);
+        elevatorRight.set(elevatorPID.calculate(elevator_encoder.getPosition(), autoElevatorHeight)*.5);
       } else if (autoTime > 8 && autoTime < 10) {
         endEffectorLeft.set(.5);
         endEffectorRight.set(-.5);
@@ -361,16 +361,16 @@ public class Robot extends TimedRobot {
 
       // Right Bumper is L1
     } else if (opController.getAButton()) {
-      elevatorLeft.set(elevatorPID.calculate(elevator_encoder.getPosition()*.5, L1Position));
-      elevatorRight.set(elevatorPID.calculate(elevator_encoder.getPosition()*.5, L1Position));
+      elevatorLeft.set(elevatorPID.calculate(elevator_encoder.getPosition(), L1Position)*.5);
+      elevatorRight.set(elevatorPID.calculate(elevator_encoder.getPosition(), L1Position)*.5);
       // Left Bummper is L2
     } else if (opController.getXButton()) {
-      elevatorLeft.set(elevatorPID.calculate(elevator_encoder.getPosition()*.5, L2Position));
-      elevatorRight.set(elevatorPID.calculate(elevator_encoder.getPosition()*.5, L2Position));
+      elevatorLeft.set(elevatorPID.calculate(elevator_encoder.getPosition(), L2Position)*.5);
+      elevatorRight.set(elevatorPID.calculate(elevator_encoder.getPosition(), L2Position)*.5);
       // Right Trigger is L3
     } else if (opController.getYButton()) {
-      elevatorLeft.set(elevatorPID.calculate(elevator_encoder.getPosition()*.5, L3Position));
-      elevatorRight.set(elevatorPID.calculate(elevator_encoder.getPosition()*.5, L3Position));
+      elevatorLeft.set(elevatorPID.calculate(elevator_encoder.getPosition(), L3Position)*.5);
+      elevatorRight.set(elevatorPID.calculate(elevator_encoder.getPosition(), L3Position)*.5);
       // Left Trigger is L4
     // } else if (opController.getBButton()) {
     //   elevatorLeft.set(elevatorPID.calculate(elevator_encoder.getPosition(), 100));
@@ -378,8 +378,8 @@ public class Robot extends TimedRobot {
 
     // Returns to bottom for intaking
     } else if (opController.getBButton()) {
-      elevatorLeft.set(elevatorbottomPID.calculate(elevator_encoder.getPosition()*.5, intakePosition));
-      elevatorRight.set(elevatorPID.calculate(elevator_encoder.getPosition()*.5, intakePosition));
+      elevatorLeft.set(elevatorbottomPID.calculate(elevator_encoder.getPosition(), intakePosition)*.5);
+      elevatorRight.set(elevatorPID.calculate(elevator_encoder.getPosition(), intakePosition)*.5);
     } else {
       // Stop the elevator from moving if no buttons are being held
       elevatorLeft.set(0);
@@ -394,8 +394,8 @@ public class Robot extends TimedRobot {
       endEffectorRight.set(-.07);
     // Left Bumper shoots for L1
     } else if(opController.getLeftBumperButton()){
-      endEffectorLeft.set(.6);
-      endEffectorRight.set(-.3);
+      endEffectorLeft.set(.5)`A24KKKKKK;
+      endEffectorRight.set(-.2)
     // Right Bumper is to eject coral
      }else if (opController.getRightBumperButton()){
       endEffectorLeft.set(-.05);
