@@ -87,7 +87,7 @@ public class Robot extends TimedRobot {
   public double autoElevatorHeight = 58;
 
   double L1Position = 3;
-  double L2Position = ;
+  double L2Position = 20;
   double L3Position = 61;
   double intakePosition = 5;
 
