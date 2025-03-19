@@ -87,12 +87,12 @@ public class Robot extends TimedRobot {
   public double autoElevatorHeight = 58;
 
   double L1Position = 3;
-  double L2Position = 18;
-  double L3Position = 58;
+  double L2Position = ;
+  double L3Position = 61;
   double intakePosition = 5;
 
   public static double getTagAngle(int id) {
-    switch (id) {++
+    switch (id) {
       case 7:
       case 18:
         return 0;
@@ -239,7 +239,8 @@ public class Robot extends TimedRobot {
     strafeController.setIZone(1);
 
     PIDController anglePreserve = new PIDController(.01, .1, 0);
-    PIDController elevatorPID = new PIDController(0.05, 0, 0);
+    PIDController elevatorPID = new PIDController(0.08, 0.1, 0);
+    elevatorPID.setIntegratorRange(-5, 5);
     NetworkTableInstance.getDefault().getTable("limelight").getEntry("pipeline").setNumber(0);
 
     switch (m_levelSelected) {
@@ -394,8 +395,8 @@ public class Robot extends TimedRobot {
       endEffectorRight.set(-.07);
     // Left Bumper shoots for L1
     } else if(opController.getLeftBumperButton()){
-      endEffectorLeft.set(.5)`A24KKKKKK;
-      endEffectorRight.set(-.2)
+      endEffectorLeft.set(.5);
+      endEffectorRight.set(-.2);
     // Right Bumper is to eject coral
      }else if (opController.getRightBumperButton()){
       endEffectorLeft.set(-.05);
