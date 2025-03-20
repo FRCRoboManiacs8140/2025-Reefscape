@@ -169,9 +169,9 @@ public class Robot extends TimedRobot {
     SmartDashboard.putNumber("travel_to_proportional_PID", 0.06);
     SmartDashboard.putNumber("travel_to_derivative_PID", 0.05);
     // PID for strafe to autonomous movement
-    SmartDashboard.putNumber("strafe_to_integral_PID", 1);
-    SmartDashboard.putNumber("strafe_to_proportional_PID", 0.02);
-    SmartDashboard.putNumber("strafe_to_derivative_PID", 0.5);
+    SmartDashboard.putNumber("strafe_to_integral_PID", .01);
+    SmartDashboard.putNumber("strafe_to_proportional_PID", .1);
+    SmartDashboard.putNumber("strafe_to_derivative_PID", 0);
 
   }
 
@@ -246,7 +246,7 @@ public class Robot extends TimedRobot {
         .getDoubleArray(new double[6]);
     double autoTime = SmartDashboard.getNumber("Time elapsed", 0);
     // values for travel to; PID
-    double tkI = SmartDashboard.getNumber("travel_to_integral_PID", 0.);
+    double tkI = SmartDashboard.getNumber("travel_to_integral_PID", 0);
     double tkP = SmartDashboard.getNumber("travel_to_proportional_PID", 0);
     double tkD = SmartDashboard.getNumber("travel_to_derivative_PID", 0);
     // values for strafe; PID
@@ -469,9 +469,9 @@ public class Robot extends TimedRobot {
     double tkD = SmartDashboard.getNumber("travel_to_derivative_PID", 0);
 
     // values for strafe; PID
-    double kI = SmartDashboard.getNumber("strafe_to_integral_PID", .5);
-    double kP = SmartDashboard.getNumber("strafe_to_proportional_PID", 0.5);
-    double kD = SmartDashboard.getNumber("strafe_to_derivative_PID", 0.4);
+    double kI = SmartDashboard.getNumber("strafe_to_integral_PID", .0);
+    double kP = SmartDashboard.getNumber("strafe_to_proportional_PID", 0);
+    double kD = SmartDashboard.getNumber("strafe_to_derivative_PID", 0);
 
     // Set up PID controll for Travel To motion
     PIDController travelToController = new PIDController(tkP, tkI, tkD);
@@ -598,8 +598,8 @@ public class Robot extends TimedRobot {
           drive.driveCartesian(
               // Strafe to the April tag
               0,
-              MathUtil.clamp(-strafeController.calculate(tx, 0), 0.5, 0.8),
-              botpose[5] * .0005);
+              strafeController.calculate(tx, 0),
+              0);
           // Set robot to manual controll if the robot can't see a April tag
         } catch (Exception e) {
           drive.driveCartesian(
@@ -618,8 +618,8 @@ public class Robot extends TimedRobot {
           // Strafe to the April tag
           drive.driveCartesian(
               0,
-              MathUtil.clamp(-strafeController.calculate(tx, 0), 0.5, 0.8),
-              botpose[5] * .0005);
+              strafeController.calculate(tx, 0),
+              0);
           // Set robot to manual control if the robot can't see a April tag
         } catch (Exception e) {
           drive.driveCartesian(
