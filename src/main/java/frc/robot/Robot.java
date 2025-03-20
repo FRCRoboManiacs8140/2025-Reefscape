@@ -158,10 +158,10 @@ public class Robot extends TimedRobot {
 
     CameraServer.startAutomaticCapture();
 
-    driveSubsystem = new DriveSubsystem();
-    autonomousSubsystem = new AutonomousSubsystem();
-    elevatorSubsystem = new ElevatorSubsystem();
-    intakeSubsystem = new IntakeSubsystem();
+    //driveSubsystem = new DriveSubsystem();
+    //autonomousSubsystem = new AutonomousSubsystem();
+    //elevatorSubsystem = new ElevatorSubsystem();
+    //intakeSubsystem = new IntakeSubsystem();
     limeLightSubsystem = new LimeLightSubsystem();
     pidControllers = new PIDControllers();
   }
