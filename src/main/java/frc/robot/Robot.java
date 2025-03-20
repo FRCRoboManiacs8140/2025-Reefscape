@@ -139,7 +139,6 @@ public class Robot extends TimedRobot {
   // * This function is run when the robot is first started up and should be used
   // * for any
   // * initialization code.
-  // *
   @Override
   public void robotInit() {
     m_chooser.setDefaultOption("Front Auto", kFrontAuto);
@@ -261,7 +260,6 @@ public class Robot extends TimedRobot {
 
     PIDController travelToController = pidControllers.travelToController;
     PIDController strafeController = pidControllers.strafeController;
-    PIDController turnController = pidControllers.turnController;
     PIDController anglePreserve = pidControllers.anglePreserve;
 
     SmartDashboard.putNumber("Target X", tx); // Distance between of the crosshair and the object in the X coordinate
@@ -328,10 +326,6 @@ public class Robot extends TimedRobot {
       // Go to April Tag Vision
       NetworkTableInstance.getDefault().getTable("limelight").getEntry("pipeline").setNumber(0);
       if (tv == 1) {
-        // Go to nearest April Tag
-        // Commented out to test new code!!!
-        // drive.driveCartesian(travelTo, strafe, ((-(gyro.getAngle() - current_angle) % 360) * .5),
-        // Rotation2d.fromDegrees(0));
         try {
 
           drive.driveCartesian(
@@ -347,10 +341,6 @@ public class Robot extends TimedRobot {
         }
         // if (drive_controller.get)
       }
-
-      // according to all known laws of avation there should be no way a bee is able
-      // to fly its wings are too small to get its fat little body off of the ground
-      // the bee of course flys
 
       // Defines what happens when you press AButton
       // } else if (drive_controller.getXButton()) {

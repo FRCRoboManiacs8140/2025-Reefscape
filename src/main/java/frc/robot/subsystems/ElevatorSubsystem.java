@@ -13,7 +13,6 @@ public class ElevatorSubsystem {
 
   public ElevatorSubsystem() {
     // Initialize elevator motors and encoder
-    // ...existing code...
     elevatorRight = new SparkMax(3, MotorType.kBrushless);
     elevatorLeft = new SparkMax(5, MotorType.kBrushless);
     elevatorEncoder = elevatorRight.getEncoder();
