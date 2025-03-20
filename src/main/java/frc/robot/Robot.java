@@ -16,6 +16,7 @@ import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkBase;
 
 import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.cscore.UsbCamera;
 import edu.wpi.first.hal.simulation.DriverStationDataJNI;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
@@ -75,6 +76,22 @@ public class Robot extends TimedRobot {
   private final MecanumDrive drive = new MecanumDrive(leftFront, leftBack, rightFront, rightBack);
 
   private final XboxController drive_controller = new XboxController(0);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
   private final XboxController opController = new XboxController(1);
 
   // private final ADIS16470_IMU gyro = new ADIS16470_IMU();
@@ -145,7 +162,8 @@ public class Robot extends TimedRobot {
     SmartDashboard.putData("Auto score level", m_levelChooser);
     SmartDashboard.putNumber("drive_reduction", 1);
 
-    CameraServer.startAutomaticCapture();
+    UsbCamera camera = CameraServer.startAutomaticCapture();
+    camera.setResolution(640, 480);
     // PID for travel to autonomous movement
     SmartDashboard.putNumber("travel_to_integral_PID", 0.01);
     SmartDashboard.putNumber("travel_to_proportional_PID", 0.06);
