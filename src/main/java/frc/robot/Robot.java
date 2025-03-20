@@ -1,6 +1,6 @@
 // Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root di rectory of this project.
+// Open Source Software; you can modify and/or share it under the terms of the
+// WPILib BSD license file in the root di rectory of this project.
 // testing new branch
 
 package frc.robot;
@@ -35,6 +35,7 @@ import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.AutonomousSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.subsystems.LimeLightSubsystem;
 import frc.robot.controllers.PIDControllers;
 
 //  * The VM is configured to automatically run this class, and to call the
@@ -66,6 +67,7 @@ public class Robot extends TimedRobot {
   private AutonomousSubsystem autonomousSubsystem;
   private ElevatorSubsystem elevatorSubsystem;
   private IntakeSubsystem intakeSubsystem;
+  private LimeLightSubsystem limeLightSubsystem;
   private PIDControllers pidControllers;
 
   // Define motors
@@ -161,6 +163,7 @@ public class Robot extends TimedRobot {
     autonomousSubsystem = new AutonomousSubsystem();
     elevatorSubsystem = new ElevatorSubsystem();
     intakeSubsystem = new IntakeSubsystem();
+    limeLightSubsystem = new LimeLightSubsystem();
     pidControllers = new PIDControllers();
   }
 
@@ -240,50 +243,27 @@ public class Robot extends TimedRobot {
     driveSubsystem.drive(drive_controller, gyro);
     elevatorSubsystem.control(opController);
     intakeSubsystem.control(opController);
+    limeLightSubsystem.updateLimelightData();
+    getlimelightcontrols();
   }
 
   // Runs the limelight function
   public void getlimelightcontrols() {
-
     // Outputs limelight as variables and puts them in the dashboard
+    double tv = limeLightSubsystem.getTv();
+    double tx = limeLightSubsystem.getTx();
+    double ty = limeLightSubsystem.getTy();
+    double ta = limeLightSubsystem.getTa();
+    double[] botpose = limeLightSubsystem.getBotpose();
+    double[] campose = limeLightSubsystem.getCampose();
+    int id = limeLightSubsystem.getId();
+    double tagAngle = limeLightSubsystem.getTagAngle(id);
 
-    // Boolean that is 1 if a target is detected, 0 if not
-    double tv = NetworkTableInstance.getDefault().getTable("limelight").getEntry("tv").getDouble(0);
-    // X angle distance from center of camera frame to center of target
-    double tx = NetworkTableInstance.getDefault().getTable("limelight").getEntry("tx").getDouble(0);
-    // Y angle distance from center of camera frame to center of target
-    double ty = NetworkTableInstance.getDefault().getTable("limelight").getEntry("ty").getDouble(0);
-    // Area of the camera frame that the object takes up, can be used to estimate
-    // how close the object is
-    double ta = NetworkTableInstance.getDefault().getTable("limelight").getEntry("ta").getDouble(0);
-    double botpose[] = NetworkTableInstance.getDefault().getTable("limelight").getEntry("botpose")
-        .getDoubleArray(new double[6]);
-    double campose[] = NetworkTableInstance.getDefault().getTable("limelight").getEntry("campose")
-        .getDoubleArray(new double[6]);
-    int id = NetworkTableInstance.getDefault().getTable("limelight").getEntry("tid").getNumber(0).intValue();
-    double tagAngle = getTagAngle(id);
-    
+    PIDController travelToController = pidControllers.travelToController;
+    PIDController strafeController = pidControllers.strafeController;
+    PIDController turnController = pidControllers.turnController;
+    PIDController anglePreserve = pidControllers.anglePreserve;
 
-    // values for travel to; PID
-    double tkI = SmartDashboard.getNumber("travel_to_integral_PID", 0.);
-    double tkP = SmartDashboard.getNumber("travel_to_proportional_PID", 0.005);
-    double tkD = SmartDashboard.getNumber("travel_to_derivative_PID", 0);
-
-    // values for strafe; PID
-    double kI = SmartDashboard.getNumber("strafe_to_integral_PID", .5);
-    double kP = SmartDashboard.getNumber("strafe_to_proportional_PID", 0.5);
-    double kD = SmartDashboard.getNumber("strafe_to_derivative_PID", 0.4);
-
-    // Set up PID controll for Travel To motion
-    PIDController travelToController = new PIDController(tkP, tkI, tkD);
-    travelToController.setIntegratorRange(-5, 5);
-    // Set up PID controll for Strafe To motion
-    PIDController strafeController = new PIDController(kP, kI, kD);
-    strafeController.setIntegratorRange(-5, 5);
-
-    strafeController.setIZone(1);
-    PIDController turnController = new PIDController(.02, .1, 0);
-    PIDController anglePreserve = new PIDController(.01, .1, 0);
     SmartDashboard.putNumber("Target X", tx); // Distance between of the crosshair and the object in the X coordinate
     SmartDashboard.putNumber("Target y", ty); // Distance between of the crosshair and the object in the Y coordinate
     SmartDashboard.putNumber("Target Area", ta); // The area that the object takes up
