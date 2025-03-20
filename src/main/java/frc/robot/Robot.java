@@ -354,7 +354,7 @@ public class Robot extends TimedRobot {
     // Position", elevator_encoder.getPosition());
 
     // Code for Limit Switch
-    if (elevatorLimit.get() == true) {
+    if (elevatorLimit.get() == false) {
       elevatorLeft.set(0);
       elevatorRight.set(0);
       elevator_encoder.setPosition(0);
