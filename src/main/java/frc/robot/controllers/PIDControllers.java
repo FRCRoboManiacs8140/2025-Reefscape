@@ -12,7 +12,7 @@ public class PIDControllers {
 
   public PIDControllers() {
     // Initialize PID controllers
-    double tkI = (0.01);
+    double tkI = 0.01;
     double tkP = 0.06;
     double tkD = 0.05;
     SmartDashboard.getNumber("travel_to_integral_PID", tkI);
