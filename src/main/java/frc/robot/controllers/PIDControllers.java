@@ -12,15 +12,21 @@ public class PIDControllers {
 
   public PIDControllers() {
     // Initialize PID controllers
-    double tkI = SmartDashboard.getNumber("travel_to_integral_PID", 0.01);
-    double tkP = SmartDashboard.getNumber("travel_to_proportional_PID", 0.06);
-    double tkD = SmartDashboard.getNumber("travel_to_derivative_PID", 0.05);
+    double tkI = (0.01);
+    double tkP = 0.06;
+    double tkD = 0.05;
+    SmartDashboard.getNumber("travel_to_integral_PID", tkI);
+    SmartDashboard.getNumber("travel_to_proportional_PID", tkP);
+    SmartDashboard.getNumber("travel_to_derivative_PID", tkD);
     travelToController = new PIDController(tkP, tkI, tkD);
     travelToController.setIntegratorRange(-5, 5);
-
-    double kI = SmartDashboard.getNumber("strafe_to_integral_PID", 1);
-    double kP = SmartDashboard.getNumber("strafe_to_proportional_PID", 0.02);
-    double kD = SmartDashboard.getNumber("strafe_to_derivative_PID", 0.5);
+    
+    double kI = 1; 
+    double kP = 0.02;
+    double kD =  0.5;
+    SmartDashboard.getNumber("strafe_to_integral_PID", kI);
+    SmartDashboard.getNumber("strafe_to_proportional_PID", kP);
+    SmartDashboard.getNumber("strafe_to_derivative_PID", kD);
     strafeController = new PIDController(kP, kI, kD);
     strafeController.setIntegratorRange(-5, 5);
     strafeController.setIZone(1);

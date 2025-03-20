@@ -156,14 +156,6 @@ public class Robot extends TimedRobot {
     SmartDashboard.putNumber("drive_reduction", 1);
 
     CameraServer.startAutomaticCapture();
-    // PID for travel to autonomous movement
-    SmartDashboard.putNumber("travel_to_integral_PID", 0.01);
-    SmartDashboard.putNumber("travel_to_proportional_PID", 0.06);
-    SmartDashboard.putNumber("travel_to_derivative_PID", 0.05);
-    // PID for strafe to autonomous movement
-    SmartDashboard.putNumber("strafe_to_integral_PID", 1);
-    SmartDashboard.putNumber("strafe_to_proportional_PID", 0.02);
-    SmartDashboard.putNumber("strafe_to_derivative_PID", 0.5);
 
     driveSubsystem = new DriveSubsystem();
     autonomousSubsystem = new AutonomousSubsystem();
