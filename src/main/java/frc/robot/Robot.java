@@ -29,6 +29,7 @@ import edu.wpi.first.wpilibj.drive.MecanumDrive;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.AnalogGyro;
+import edu.wpi.first.wpilibj.DigitalInput;
 
 //  * The VM is configured to automatically run this class, and to call the
 //  * functions corresponding to
@@ -48,6 +49,8 @@ public class Robot extends TimedRobot {
   private static final String levelOne = "L1";
   private static final String levelTwo = "L2";
   private static final String levelThree = "L3";
+
+   private DigitalInput elevatorLimit = new DigitalInput(0); // Limit switch for elevator
 
   private String m_autoSelected;
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
@@ -349,6 +352,14 @@ public class Robot extends TimedRobot {
     SmartDashboard.putNumber("Elevator Position", elevator_encoder.getPosition());
     // double elevator_encoder_teleop = SmartDashboard.getNumber("Elevator
     // Position", elevator_encoder.getPosition());
+
+    // Code for Limit Switch
+    if (elevatorLimit.get() == true) {
+      elevatorLeft.set(0);
+      elevatorRight.set(0);
+      elevator_encoder.setPosition(0);
+    }
+
     // Y makes elevator go up manually
     if (opController.getPOV() == 0) {
       elevatorLeft.set(0.1);
