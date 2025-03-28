@@ -491,7 +491,7 @@ private void setElevatorPosition(PIDController pidController, double targetPosit
       offset = 54;
       gyro.reset();
     }
-    Rotation2d gyroangle = Rotation2d.fromDegrees((gyro.getAngle()*-1) + offset);
+    Rotation2d gyroangle = Rotation2d.fromDegrees((gyro.getAngle()) + offset);
 
     // Outputs limelight as variables and puts them in the dashboard
 
@@ -561,7 +561,7 @@ private void setElevatorPosition(PIDController pidController, double targetPosit
         NetworkTableInstance.getDefault().getTable("limelight").getEntry("pipeline").setNumber(2);
         
         if (tv == 1) {
-          drive.driveCartesian(drive_controller.getLeftY()*-.2, -MathUtil.clamp(strafeController.calculate(tx, 0), (-(33-ta)/100), ((33-ta)/100)), MathUtil.clamp(turnController.calculate((gyro.getAngle() + 3600 + offset) % 360, tagAngle),-.5,.5));
+          drive.driveCartesian(drive_controller.getLeftY()*-.2, -MathUtil.clamp(strafeController.calculate(tx, 0), (-(33-ta)/100), ((33-ta)/100)), 0/*MathUtil.clamp(turnController.calculate((gyro.getAngle() + 3600 + offset) % 360, tagAngle),-.5,.5)*/);
         //   getTagAngle(id);
         // drive.driveCartesian(0, 0, turnController.calculate(gyro.getAngle() % 360, tagAngle));
         // }
@@ -571,7 +571,10 @@ private void setElevatorPosition(PIDController pidController, double targetPosit
         }
     } else if (drive_controller.getRightBumper()) {
       NetworkTableInstance.getDefault().getTable("limelight").getEntry("pipeline").setNumber(3);
-      drive.driveCartesian(drive_controller.getLeftY()*-.2, -MathUtil.clamp(strafeController.calculate(tx, 0), (-(33-ta)/100), ((33-ta)/100)), MathUtil.clamp(turnController.calculate((gyro.getAngle() + 3600 + offset) % 360, tagAngle),-.5,.5));
+
+      if (tv ==1) {
+      drive.driveCartesian(drive_controller.getLeftY()*-.2, -MathUtil.clamp(strafeController.calculate(tx, 0), (-(33-ta)/100), ((33-ta)/100)), 0/*-MathUtil.clamp(turnController.calculate((gyro.getAngle() + offset) % 360, tagAngle),-.5,.5)*/);
+      }
       // if (tv == 1) {
       //   getTagAngle(id);
       //   drive.driveCartesian(0, 0, turnController.calculate(gyro.getAngle() % 360, tagAngle));
@@ -652,7 +655,7 @@ private void setElevatorPosition(PIDController pidController, double targetPosit
           -drive_controller.getLeftY() * movement_sensetivity,
           drive_controller.getLeftX() * movement_sensetivity,
           drive_controller.getRightX() * turn_sensetivity,
-          gyroangle);
+          (gyroangle));
     }
 
   } // ends teleop
