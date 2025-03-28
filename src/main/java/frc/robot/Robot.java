@@ -91,8 +91,8 @@ public class Robot extends TimedRobot {
   private final XboxController drive_controller = new XboxController(0);
   private final XboxController opController = new XboxController(1);
 
-  //private final ADIS16470_IMU gyro = new ADIS16470_IMU();
-  private final ADXRS450_Gyro gyro = new ADXRS450_Gyro();
+  private final ADIS16470_IMU gyro = new ADIS16470_IMU();
+  //private final ADXRS450_Gyro gyro = new ADXRS450_Gyro();
   // private final for encoder
   private final RelativeEncoder elevator_encoder = elevatorRight.getEncoder();
 
@@ -103,8 +103,9 @@ public class Robot extends TimedRobot {
   public double autoElevatorHeight = 58;
 
   double L1Position = 1;
-  double L2Position = 48;
-  double L3Position = 59;
+  //double L2Position = 48;
+  double L2Position = 30;
+  double L3Position = 56;
   double intakePosition = 1;
 
   double offset = 0;
@@ -116,7 +117,7 @@ public class Robot extends TimedRobot {
         return 0;
       case 6:
       case 19:
-        return 300;
+        return -60;
       case 11:
       case 20:
         return 240;
@@ -212,7 +213,7 @@ public class Robot extends TimedRobot {
    
   System.out.println("Intake Beam Break: " + intakebeambreak.get());
 
-    Rotation2d gyroangle = Rotation2d.fromDegrees(-gyro.getAngle() + offset);
+    Rotation2d gyroangle = Rotation2d.fromDegrees(gyro.getAngle() + offset);
     SmartDashboard.putNumber("gyro angle", gyroangle.getDegrees());
     SmartDashboard.putNumber("gyro rate", gyro.getRate()*-1);
     SmartDashboard.putNumber("current angle", gyroangle.getDegrees() % 360);
@@ -413,8 +414,8 @@ public class Robot extends TimedRobot {
       endEffectorRight.set(-.5);
     // If the beam break is tripped, the intake automatically spins until it is cleared
     } else if (!intakebeambreak.get()) {
-      endEffectorLeft.set(.07);
-      endEffectorRight.set(-.07);
+      endEffectorLeft.set(.2);
+      endEffectorRight.set(-.2);
       opController.setRumble(GenericHID.RumbleType.kLeftRumble,.5);
       opController.setRumble(GenericHID.RumbleType.kRightRumble,.5);
       // If nothing is held the End Effector does not spin
@@ -491,7 +492,7 @@ private void setElevatorPosition(PIDController pidController, double targetPosit
       offset = 54;
       gyro.reset();
     }
-    Rotation2d gyroangle = Rotation2d.fromDegrees((gyro.getAngle()) + offset);
+    Rotation2d gyroangle = Rotation2d.fromDegrees((-gyro.getAngle()) + offset);
 
     // Outputs limelight as variables and puts them in the dashboard
 
@@ -561,7 +562,7 @@ private void setElevatorPosition(PIDController pidController, double targetPosit
         NetworkTableInstance.getDefault().getTable("limelight").getEntry("pipeline").setNumber(2);
         
         if (tv == 1) {
-          drive.driveCartesian(drive_controller.getLeftY()*-.2, -MathUtil.clamp(strafeController.calculate(tx, 0), (-(33-ta)/100), ((33-ta)/100)), 0/*MathUtil.clamp(turnController.calculate((gyro.getAngle() + 3600 + offset) % 360, tagAngle),-.5,.5)*/);
+          drive.driveCartesian(drive_controller.getLeftY()*-.6, -MathUtil.clamp(strafeController.calculate(tx, 0), (-(33-ta)/100), ((33-ta)/100)), -MathUtil.clamp(turnController.calculate((gyro.getAngle() + 360 + offset) % 360, -tagAngle),-.5,.5));
         //   getTagAngle(id);
         // drive.driveCartesian(0, 0, turnController.calculate(gyro.getAngle() % 360, tagAngle));
         // }
@@ -570,10 +571,11 @@ private void setElevatorPosition(PIDController pidController, double targetPosit
       
         }
     } else if (drive_controller.getRightBumper()) {
-      NetworkTableInstance.getDefault().getTable("limelight").getEntry("pipeline").setNumber(3);
+      NetworkTableInstance.getDefault().getTable("limelight").getEntry("pipeline").setNumber(3); 
 
-      if (tv ==1) {
-      drive.driveCartesian(drive_controller.getLeftY()*-.2, -MathUtil.clamp(strafeController.calculate(tx, 0), (-(33-ta)/100), ((33-ta)/100)), 0/*-MathUtil.clamp(turnController.calculate((gyro.getAngle() + offset) % 360, tagAngle),-.5,.5)*/);
+      if (tv == 1) {
+      drive.driveCartesian(drive_controller.getLeftY()*-.6, -MathUtil.clamp(strafeController.calculate(tx, 0), (-(33-ta)/100), ((33-ta)/100)), -MathUtil.clamp(turnController.calculate(
+        (gyro.getAngle() + 360 + offset) % 360, -60),-.1,.1));
       }
       // if (tv == 1) {
       //   getTagAngle(id);
