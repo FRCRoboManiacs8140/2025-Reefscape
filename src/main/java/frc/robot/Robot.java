@@ -105,7 +105,7 @@ public class Robot extends TimedRobot {
   double L1Position = 1;
   //double L2Position = 48;
   double L2Position = 15;
-  double L3Position = 56;
+  double L3Position = 55;
   double intakePosition = 1;
 
   double offset = 0;
@@ -292,7 +292,7 @@ public class Robot extends TimedRobot {
     double tagAngle = getTagAngle(id);
 
     PIDController anglePreserve = new PIDController(.01, 0, 0);
-    PIDController elevatorPID = new PIDController(0.08, 0.1, 0);
+    PIDController elevatorPID = new PIDController(0.08, 0.2, 0);
     elevatorPID.setIntegratorRange(-5, 5);
     NetworkTableInstance.getDefault().getTable("limelight").getEntry("pipeline").setNumber(0);
 
@@ -414,8 +414,8 @@ public class Robot extends TimedRobot {
       endEffectorRight.set(-.5);
     // If the beam break is tripped, the intake automatically spins until it is cleared
     } else if (!intakebeambreak.get()) {
-      endEffectorLeft.set(.2);
-      endEffectorRight.set(-.2);
+      endEffectorLeft.set(.18);
+      endEffectorRight.set(-.18);
       opController.setRumble(GenericHID.RumbleType.kLeftRumble,.5);
       opController.setRumble(GenericHID.RumbleType.kRightRumble,.5);
       // If nothing is held the End Effector does not spin
@@ -562,7 +562,7 @@ private void setElevatorPosition(PIDController pidController, double targetPosit
         NetworkTableInstance.getDefault().getTable("limelight").getEntry("pipeline").setNumber(2);
         
         if (tv == 1) {
-          drive.driveCartesian(drive_controller.getLeftY()*-.6, -MathUtil.clamp(strafeController.calculate(tx, 0), -.5, .5), -MathUtil.clamp(turnController.calculate((gyro.getAngle() + offset) % 360, tagAngle),-.3,.3));
+          drive.driveCartesian(drive_controller.getLeftY()*-.6, -MathUtil.clamp(strafeController.calculate(tx, 0), -.5, .5)*1.2, -MathUtil.clamp(turnController.calculate((gyro.getAngle() + offset) % 360, tagAngle),-.1,.1)*0.6);
         //   getTagAngle(id);
         // drive.driveCartesian(0, 0, turnController.calculate(gyro.getAngle() % 360, tagAngle));
         // }
@@ -574,8 +574,8 @@ private void setElevatorPosition(PIDController pidController, double targetPosit
       NetworkTableInstance.getDefault().getTable("limelight").getEntry("pipeline").setNumber(3); 
 
       if (tv == 1) {
-      drive.driveCartesian(drive_controller.getLeftY()*-.6, -MathUtil.clamp(strafeController.calculate(tx, 0), -.5, .5), -MathUtil.clamp(turnController.calculate(
-        (gyro.getAngle() + offset) % 360, tagAngle),-.3,.3));
+      drive.driveCartesian(drive_controller.getLeftY()*-.6, -MathUtil.clamp(strafeController.calculate(tx, 0), -.5, .5)*1.2, -MathUtil.clamp(turnController.calculate(
+        (gyro.getAngle() + offset) % 360, tagAngle),-.1,.1)*0.6);
       }
       // if (tv == 1) {
       //   getTagAngle(id);
