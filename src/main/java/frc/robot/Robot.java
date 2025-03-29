@@ -100,11 +100,11 @@ public class Robot extends TimedRobot {
   public double strafeStartTime = 0;
   public double second = 1;
   public double lastSecond = 0;
-  public double autoElevatorHeight = 58;
+  public double autoElevatorHeight = 60;
 
   double L1Position = 1;
   //double L2Position = 48;
-  double L2Position = 30;
+  double L2Position = 15;
   double L3Position = 56;
   double intakePosition = 1;
 
@@ -519,7 +519,7 @@ private void setElevatorPosition(PIDController pidController, double targetPosit
 
     // values for strafe; PID
     double kI = SmartDashboard.getNumber("strafe_to_integral_PID", .0);
-    double kP = SmartDashboard.getNumber("strafe_to_proportional_PID", .025);
+    double kP = SmartDashboard.getNumber("strafe_to_proportional_PID", .03);
     double kD = SmartDashboard.getNumber("strafe_to_derivative_PID", 0);
 
     // Set up PID controll for Travel To motion
@@ -562,7 +562,7 @@ private void setElevatorPosition(PIDController pidController, double targetPosit
         NetworkTableInstance.getDefault().getTable("limelight").getEntry("pipeline").setNumber(2);
         
         if (tv == 1) {
-          drive.driveCartesian(drive_controller.getLeftY()*-.6, -MathUtil.clamp(strafeController.calculate(tx, 0), (-(33-ta)/100), ((33-ta)/100)), -MathUtil.clamp(turnController.calculate((gyro.getAngle() + 360 + offset) % 360, -tagAngle),-.5,.5));
+          drive.driveCartesian(drive_controller.getLeftY()*-.6, -MathUtil.clamp(strafeController.calculate(tx, 0), -.5, .5), -MathUtil.clamp(turnController.calculate((gyro.getAngle() + offset) % 360, tagAngle),-.3,.3));
         //   getTagAngle(id);
         // drive.driveCartesian(0, 0, turnController.calculate(gyro.getAngle() % 360, tagAngle));
         // }
@@ -574,8 +574,8 @@ private void setElevatorPosition(PIDController pidController, double targetPosit
       NetworkTableInstance.getDefault().getTable("limelight").getEntry("pipeline").setNumber(3); 
 
       if (tv == 1) {
-      drive.driveCartesian(drive_controller.getLeftY()*-.6, -MathUtil.clamp(strafeController.calculate(tx, 0), (-(33-ta)/100), ((33-ta)/100)), -MathUtil.clamp(turnController.calculate(
-        (gyro.getAngle() + 360 + offset) % 360, -60),-.1,.1));
+      drive.driveCartesian(drive_controller.getLeftY()*-.6, -MathUtil.clamp(strafeController.calculate(tx, 0), -.5, .5), -MathUtil.clamp(turnController.calculate(
+        (gyro.getAngle() + offset) % 360, tagAngle),-.3,.3));
       }
       // if (tv == 1) {
       //   getTagAngle(id);
@@ -596,7 +596,7 @@ private void setElevatorPosition(PIDController pidController, double targetPosit
           // Strafe to the April tag
           drive.driveCartesian(
               0,
-              -MathUtil.clamp(strafeController.calculate(tx, 0), (-(33-ta)/100), ((33-ta)/100)),
+              -MathUtil.clamp(strafeController.calculate(tx, 0), -.3, .3),
               0);
           // Set robot to manual control if the robot can't see a April tag
         } catch (Exception e) {
@@ -634,13 +634,13 @@ private void setElevatorPosition(PIDController pidController, double targetPosit
 
     } else if (drive_controller.getPOV() == 90) {
       // Strafe right
-      drive.driveCartesian(.05, 0.1, (anglePreserve.calculate(gyro.getRate(), 0)), Rotation2d.fromDegrees(0));
+      drive.driveCartesian(0, 0.1, 0);
 
     } else if (drive_controller.getPOV() == 270) {
-      drive.driveCartesian(.05, -0.1, (anglePreserve.calculate(gyro.getRate(), 0)), Rotation2d.fromDegrees(0));
+      drive.driveCartesian(0, -0.1, 0);
 
     } else if (drive_controller.getPOV() == 0){
-      drive.driveCartesian(.2, 0, (anglePreserve.calculate(gyro.getRate(), 0)), Rotation2d.fromDegrees(0));
+      drive.driveCartesian(.1, 0, 0);
 
     } else if (drive_controller.getYButton()) {
       if (tv == 1) {
