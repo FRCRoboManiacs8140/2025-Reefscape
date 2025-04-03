@@ -372,14 +372,14 @@ public class Robot extends TimedRobot {
     // Position", elevator_encoder.getPosition());
 
     // Code for Limit Switch
-    if (elevatorLimit.get() == false) {
+    if (elevatorLimit.get()) {
       elevatorLeft.set(0);
       elevatorRight.set(0);
       elevator_encoder.setPosition(0);
     }
 
     // Y makes elevator go up manually
-    if (opController.getPOV() == 0) {
+    else if (opController.getPOV() == 0) {
       elevatorLeft.set(0.1);
       elevatorRight.set(0.1);
       // A makes elevator go up manually
@@ -409,7 +409,7 @@ public class Robot extends TimedRobot {
     // Returns to bottom for intaking
     } else if (opController.getBButton()) {
       elevatorLeft.set(elevatorbottomPID.calculate(elevator_encoder.getPosition(), intakePosition)*.5);
-      elevatorRight.set(elevatorPID.calculate(elevator_encoder.getPosition(), intakePosition)*.5);
+      elevatorRight.set(elevatorbottomPID.calculate(elevator_encoder.getPosition(), intakePosition)*.5);
     } else {
       // Stop the elevator from moving if no buttons are being held
       elevatorLeft.set(0);
@@ -618,8 +618,8 @@ public class Robot extends TimedRobot {
           // Strafe to the April tag
           drive.driveCartesian(
               0,
-              strafeController.calculate(tx, 0),
-              0);
+              MathUtil.clamp(tx*.2,-.1, .1)
+,              0);
           // Set robot to manual control if the robot can't see a April tag
         } catch (Exception e) {
           drive.driveCartesian(
