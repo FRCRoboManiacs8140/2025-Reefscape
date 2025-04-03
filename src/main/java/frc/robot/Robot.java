@@ -98,7 +98,7 @@ public class Robot extends TimedRobot {
   private final MecanumDrive drive = new MecanumDrive(leftFront, leftBack, rightFront, rightBack);
 
   private final XboxController drive_controller = new XboxController(0);
-  private final XboxController opController = new XboxController(1);
+ private final XboxController opController = new XboxController(1);
 
   private final ADIS16470_IMU gyro = new ADIS16470_IMU();
   //private final ADXRS450_Gyro gyro = new ADXRS450_Gyro();
@@ -423,7 +423,6 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
     getlimelightcontrols();
-<<<<<<< HEAD
     SmartDashboard.putNumber("Gyro Angle", gyro.getAngle());
     if (drive_controller.getAButton()) {
       gyro.reset();
@@ -478,10 +477,7 @@ public class Robot extends TimedRobot {
       elevatorLeft.set(0);
       elevatorLeft.set(0);
     }
-=======
-    controlElevator(); // Refactored elevator control logic into a separate method
->>>>>>> 9e6f4533084088210e1bad7962e25beb51418e09
-
+    controlElevator();
     // Code for End Effector
 
     if (opController.getLeftTriggerAxis() > 0.2){
@@ -760,13 +756,8 @@ private void setElevatorPosition(PIDController pidController, double targetPosit
           // Strafe to the April tag
           drive.driveCartesian(
               0,
-<<<<<<< HEAD
               MathUtil.clamp(tx*.2,-.1, .1)
 ,              0);
-=======
-              -MathUtil.clamp(strafeController.calculate(tx, 0), -((33-ta)/100), ((33-ta)/100)),
-              0);
->>>>>>> 9e6f4533084088210e1bad7962e25beb51418e09
           // Set robot to manual control if the robot can't see a April tag
         } catch (Exception e) {
           drive.driveCartesian(
