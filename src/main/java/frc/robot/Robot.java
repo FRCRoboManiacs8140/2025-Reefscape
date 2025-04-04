@@ -212,7 +212,7 @@ public class Robot extends TimedRobot {
     // Put the current angle and game time on the dashboard
    
   //System.out.println("Intake Beam Break: " + intakebeambreak.get());
-    Rotation2d gyroangle = Rotation2d.fromDegrees(-gyro.getAngle() + offset);
+    Rotation2d gyroangle = Rotation2d.fromDegrees(gyro.getAngle() + offset);
     SmartDashboard.putNumber("gyro angle", gyroangle.getDegrees());
     SmartDashboard.putNumber("gyro rate", gyro.getRate()*-1);
     SmartDashboard.putNumber("current angle", gyroangle.getDegrees() % 360);
@@ -335,15 +335,15 @@ public class Robot extends TimedRobot {
       // If Left Auto is selected . . .
       case kLeftAuto:
       NetworkTableInstance.getDefault().getTable("limelight").getEntry("pipeline").setNumber(2);
-        if (autoTime > 0 + auto_wait_time && autoTime < 3 + auto_wait_time) {
-          drive.driveCartesian(.2, 0, 0, gyroangle);
+        if (autoTime > 0 + auto_wait_time && autoTime < 1 + auto_wait_time) {
+          drive.driveCartesian(.2, 0, 0);
         }
-          else if (autoTime > 3 + auto_wait_time && autoTime < 7 + auto_wait_time) {
-          drive.driveCartesian(.2, -MathUtil.clamp(strafeController.calculate(tx, 0), -.1,1), turnController.calculate(gyroangle.getDegrees() % 360, tagAngle));
-        } else if (autoTime > 7 + auto_wait_time && autoTime < 8 + auto_wait_time) {
+          else if (autoTime > 1 + auto_wait_time && autoTime < 6 + auto_wait_time) {
+          drive.driveCartesian(.2, -MathUtil.clamp(strafeController.calculate(tx, 0), -.1,1),0);
+        } else if (autoTime > 6 + auto_wait_time && autoTime < 7 + auto_wait_time) {
           elevatorLeft.set(elevatorPID.calculate(elevator_encoder.getPosition(), autoElevatorHeight)*.5);
           elevatorRight.set(elevatorPID.calculate(elevator_encoder.getPosition(), autoElevatorHeight)*.5);
-        } else if (autoTime > 8 + auto_wait_time && autoTime < 9 + auto_wait_time) {
+        } else if (autoTime > 7 + auto_wait_time && autoTime < 9 + auto_wait_time) {
           endEffectorLeft.set(.5);
           endEffectorRight.set(-.5);
         } else if (autoTime > 9 + auto_wait_time) {
@@ -362,13 +362,15 @@ public class Robot extends TimedRobot {
           drive.driveCartesian(0.25, 0, 0);
         } else if (autoTime > 5 + auto_wait_time && autoTime < 7 + auto_wait_time){
           // Eject coral onto L1
-          endEffectorLeft.set(.6);
-          endEffectorRight.set(-.3);
+          endEffectorLeft.set(.5);
+          endEffectorRight.set(-.25);
         }  else if (autoTime > 7 + auto_wait_time) {
           // Stop moving if time becomes more than 15
           drive.driveCartesian(0, 0, 0);
           endEffectorLeft.set(0);
           endEffectorRight.set(0);
+          elevatorRight.set(0);
+          elevatorLeft.set(0);
         }
         break;
 
@@ -383,20 +385,24 @@ public class Robot extends TimedRobot {
       // If right Auto is selected . . .
       case kRightAuto:
       NetworkTableInstance.getDefault().getTable("limelight").getEntry("pipeline").setNumber(3);
-      if (autoTime > 0 + auto_wait_time && autoTime < 3 + auto_wait_time) {
-        drive.driveCartesian(.2, 0, 0, gyroangle);
+      if (autoTime > 0 + auto_wait_time && autoTime < 1 + auto_wait_time) {
+        drive.driveCartesian(.2, 0, 0);
       }
-        else if (autoTime > 3 + auto_wait_time && autoTime < 7 + auto_wait_time) {
-        drive.driveCartesian(.2, -MathUtil.clamp(strafeController.calculate(tx, 0), -.1,1), turnController.calculate(gyroangle.getDegrees() % 360, tagAngle));
-      } else if (autoTime > 7 + auto_wait_time && autoTime < 8 + auto_wait_time) {
+        else if (autoTime > (1 + auto_wait_time) && autoTime < (6 + auto_wait_time)) {
+        drive.driveCartesian(.2, -MathUtil.clamp(strafeController.calculate(tx, 0), -.1,1), 0);
+      } else if (autoTime > (6 + auto_wait_time) && autoTime < (7 + auto_wait_time)) {
         elevatorLeft.set(elevatorPID.calculate(elevator_encoder.getPosition(), autoElevatorHeight)*.5);
         elevatorRight.set(elevatorPID.calculate(elevator_encoder.getPosition(), autoElevatorHeight)*.5);
-      } else if (autoTime > 8 + auto_wait_time && autoTime < 9 + auto_wait_time) {
+      } else if (autoTime > (7 + auto_wait_time) && autoTime < (9 + auto_wait_time)) {
         endEffectorLeft.set(.5);
         endEffectorRight.set(-.5);
+        elevatorRight.set(0);
+        elevatorLeft.set(0);
       } else if (autoTime > 9 + auto_wait_time) {
         // Stop moving if time becomes more than 15
         drive.driveCartesian(0, 0, 0);
+        endEffectorLeft.set(0);
+        endEffectorRight.set(0);
         // Needs code that switches mode to Teleop when time is over 15 seconds.
       }
       break;
@@ -414,7 +420,6 @@ public class Robot extends TimedRobot {
   // This function is called once when teleop is enabled. *
   @Override
   public void teleopInit() {
-    gyro.calibrate();
     //elevator_encoder.equals(0);
     
   }
@@ -434,7 +439,7 @@ public class Robot extends TimedRobot {
     // Position", elevator_encoder.getPosition());
 
     // Code for Limit Switch
-    if (elevatorLimit.get()) {
+    if (!elevatorLimit.get()) {
       elevatorLeft.set(0);
       elevatorRight.set(0);
       elevator_encoder.setPosition(0);
