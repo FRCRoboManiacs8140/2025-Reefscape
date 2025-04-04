@@ -609,7 +609,7 @@ private void setElevatorPosition(PIDController pidController, double targetPosit
 
     // values for strafe; PID
     double kI = SmartDashboard.getNumber("strafe_to_integral_PID", .0);
-    double kP = SmartDashboard.getNumber("strafe_to_proportional_PID", .03);
+    double kP = SmartDashboard.getNumber("strafe_to_proportional_PID", .05);
     double kD = SmartDashboard.getNumber("strafe_to_derivative_PID", 0);
 
     // Set up PID controll for Travel To motion
@@ -653,7 +653,7 @@ private void setElevatorPosition(PIDController pidController, double targetPosit
         
         if (tv == 1) {
           drive.driveCartesian(
-            drive_controller.getLeftY()*-.6, 
+            drive_controller.getLeftY()*-.3, 
             -MathUtil.clamp(strafeController.calculate(tx, 0), -.5, .5), 
             -MathUtil.clamp(turnController.calculate((gyro.getAngle() + offset) % 360, tagAngle),-.1,.1)
             );
