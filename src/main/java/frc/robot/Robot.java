@@ -15,6 +15,7 @@ import org.opencv.imgproc.Imgproc;
 
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkMaxConfig;
+import edu.wpi.first.wpilibj.drive.MecanumDrive;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.ctre.phoenix.motorcontrol.ControlMode;
@@ -23,6 +24,7 @@ import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkBase;
 
+import frc.robot.Subsystems.DriveSubsystem;
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.cscore.CvSink;
 import edu.wpi.first.cscore.CvSource;
@@ -75,11 +77,8 @@ public class Robot extends TimedRobot {
   private String m_levelSelected;
   private final SendableChooser<String> m_levelChooser = new SendableChooser<>();
 
-  // Define motors
-  private final SparkMax leftFront = new SparkMax(6, MotorType.kBrushless);
-  private final SparkMax rightFront = new SparkMax(1, MotorType.kBrushless);
-  private final SparkMax leftBack = new SparkMax(4, MotorType.kBrushless);
-  private final SparkMax rightBack = new SparkMax(2, MotorType.kBrushless);
+  private DriveSubsystem driveSubsystem;
+
 
   SparkMaxConfig driveConfignormal = new SparkMaxConfig();
   SparkMaxConfig driveConfiginverted = new SparkMaxConfig();
@@ -96,8 +95,6 @@ public class Robot extends TimedRobot {
 
   // private final MecanumDrive drive = new MecanumDrive(leftFront, leftBack,
   // rightFront, rightBack);
-  private final MecanumDrive drive = new MecanumDrive(leftFront, leftBack, rightFront, rightBack);
-
   private final XboxController drive_controller = new XboxController(0);
  private final XboxController opController = new XboxController(1);
 
@@ -159,10 +156,6 @@ public class Robot extends TimedRobot {
     driveConfiginverted.inverted(true);
     driveConfignormal.smartCurrentLimit(40);
     driveConfiginverted.smartCurrentLimit(40);
-    leftFront.configure(driveConfignormal, SparkBase.ResetMode.kNoResetSafeParameters, SparkBase.PersistMode.kPersistParameters);
-    leftBack.configure(driveConfignormal, SparkBase.ResetMode.kNoResetSafeParameters, SparkBase.PersistMode.kPersistParameters);
-    rightFront.configure(driveConfiginverted, SparkBase.ResetMode.kNoResetSafeParameters, SparkBase.PersistMode.kPersistParameters);
-    rightBack.configure(driveConfiginverted, SparkBase.ResetMode.kNoResetSafeParameters, SparkBase.PersistMode.kPersistParameters);
     gyro.calibrate();
     m_chooser.setDefaultOption("Front Auto", kFrontAuto);
     m_chooser.addOption("Left Auto", kLeftAuto);
@@ -208,8 +201,8 @@ public class Robot extends TimedRobot {
   // *
   @Override
   public void robotPeriodic() {
+    DriveSubsystem.SmartDashboardDrive();
 
-    
     // Put the current angle and game time on the dashboard
    
   //System.out.println("Intake Beam Break: " + intakebeambreak.get());
@@ -224,22 +217,6 @@ public class Robot extends TimedRobot {
     SmartDashboard.putNumber("Time elapsed", gameTime);
     SmartDashboard.putBoolean("Beam Break Override", false);
     SmartDashboard.putData("beam break", intakebeambreak);
-    SmartDashboard.putNumber("Front Left", leftFront.get());
-    SmartDashboard.putNumber("Front Right", rightFront.get());
-    SmartDashboard.putNumber("Back Left", leftBack.get());
-    SmartDashboard.putNumber("Back Right", rightBack.get());
-    SmartDashboard.putNumber("Front Left Output Current", leftFront.getOutputCurrent());
-    SmartDashboard.putNumber("Front Right Output Current", rightFront.getOutputCurrent());
-    SmartDashboard.putNumber("Back Left Output Current", leftBack.getOutputCurrent());
-    SmartDashboard.putNumber("Back Right Output Current", rightBack.getOutputCurrent());
-    SmartDashboard.putNumber("Front Left Applied Output", leftFront.getAppliedOutput());
-    SmartDashboard.putNumber("Front Right Applied Output", rightFront.getAppliedOutput());
-    SmartDashboard.putNumber("Back Left Applied Output", leftBack.getAppliedOutput());
-    SmartDashboard.putNumber("Back Right Applied Output", rightBack.getAppliedOutput());
-    SmartDashboard.putNumber("Front Left Temperature", leftFront.getMotorTemperature());
-    SmartDashboard.putNumber("Front Right Temperature", rightFront.getMotorTemperature());
-    SmartDashboard.putNumber("Back Left Temperature", leftBack.getMotorTemperature());
-    SmartDashboard.putNumber("Back Right Temperature", rightBack.getMotorTemperature());
     SmartDashboard.putNumber("Auto Wait Time", 0);
     
     
@@ -300,7 +277,7 @@ public class Robot extends TimedRobot {
     double tkD = SmartDashboard.getNumber("travel_to_derivative_PID", 0);
     // values for strafe; PID
     double kI = SmartDashboard.getNumber("strafe_to_integral_PID", .0);
-    double kP = SmartDashboard.getNumber("strafe_to_proportional_PID", .03);
+    double kP = SmartDashboard.getNumber("strafe_to_proportional_PID", .02);
     double kD = SmartDashboard.getNumber("strafe_to_derivative_PID", 0);
 
     PIDController travelToController = new PIDController(tkP, tkI, tkD);
@@ -337,10 +314,10 @@ public class Robot extends TimedRobot {
       case kLeftAuto:
       NetworkTableInstance.getDefault().getTable("limelight").getEntry("pipeline").setNumber(2);
         if (autoTime > 0 + auto_wait_time && autoTime < 1 + auto_wait_time) {
-          drive.driveCartesian(.2, 0, 0);
+          DriveSubsystem.drive(.2, 0, 0, gyroangle);
         }
           else if (autoTime > 1 + auto_wait_time && autoTime < 6 + auto_wait_time) {
-          drive.driveCartesian(.2, -MathUtil.clamp(strafeController.calculate(tx, 0), -.1,1),0);
+          DriveSubsystem.drive(.2, -MathUtil.clamp(strafeController.calculate(tx, 0), -.1,1),0, gyroangle);
         } else if (autoTime > 6 + auto_wait_time && autoTime < 7 + auto_wait_time) {
           elevatorLeft.set(elevatorPID.calculate(elevator_encoder.getPosition(), autoElevatorHeight)*.5);
           elevatorRight.set(elevatorPID.calculate(elevator_encoder.getPosition(), autoElevatorHeight)*.5);
@@ -349,7 +326,7 @@ public class Robot extends TimedRobot {
           endEffectorRight.set(-.5);
         } else if (autoTime > 9 + auto_wait_time) {
           // Stop moving if time becomes more than 15
-          drive.driveCartesian(0, 0, 0);
+          DriveSubsystem.drive(0, 0, 0, gyroangle);
           endEffectorLeft.set(0);
           endEffectorRight.set(0);
           // Needs code that switches mode to Teleop when time is over 15 seconds.
@@ -360,14 +337,14 @@ public class Robot extends TimedRobot {
       case kFrontAuto:
         if (autoTime > 0 + auto_wait_time && autoTime < 4 + auto_wait_time) {
           // Drive Forward for 2 seconds at 25% speed
-          drive.driveCartesian(0.25, 0, 0);
+          DriveSubsystem.drive(0.25, 0, 0, gyroangle);
         } else if (autoTime > 5 + auto_wait_time && autoTime < 7 + auto_wait_time){
           // Eject coral onto L1
           endEffectorLeft.set(.5);
           endEffectorRight.set(-.25);
         }  else if (autoTime > 7 + auto_wait_time) {
           // Stop moving if time becomes more than 15
-          drive.driveCartesian(0, 0, 0);
+          DriveSubsystem.drive(0, 0, 0, gyroangle);
           endEffectorLeft.set(0);
           endEffectorRight.set(0);
           elevatorRight.set(0);
@@ -378,7 +355,7 @@ public class Robot extends TimedRobot {
       case kPushRobot:
        // Move forward for 2 seconds at higher speed
        if (autoTime > 0 + auto_wait_time && autoTime < 2 + auto_wait_time){
-        drive.driveCartesian(.8,0,0);
+        DriveSubsystem.drive(.8,0,0, gyroangle);
        }
 
        break;
@@ -387,10 +364,10 @@ public class Robot extends TimedRobot {
       case kRightAuto:
       NetworkTableInstance.getDefault().getTable("limelight").getEntry("pipeline").setNumber(3);
       if (autoTime > 0 + auto_wait_time && autoTime < 1 + auto_wait_time) {
-        drive.driveCartesian(.2, 0, 0);
+        DriveSubsystem.drive(.2, 0, 0, gyroangle);
       }
         else if (autoTime > (1 + auto_wait_time) && autoTime < (6 + auto_wait_time)) {
-        drive.driveCartesian(.2, -MathUtil.clamp(strafeController.calculate(tx, 0), -.1,1), 0);
+        DriveSubsystem.drive(.2, -MathUtil.clamp(strafeController.calculate(tx, 0), -.1,1), 0, gyroangle);
       } else if (autoTime > (6 + auto_wait_time) && autoTime < (7 + auto_wait_time)) {
         elevatorLeft.set(elevatorPID.calculate(elevator_encoder.getPosition(), autoElevatorHeight)*.5);
         elevatorRight.set(elevatorPID.calculate(elevator_encoder.getPosition(), autoElevatorHeight)*.5);
@@ -401,7 +378,7 @@ public class Robot extends TimedRobot {
         elevatorLeft.set(0);
       } else if (autoTime > 9 + auto_wait_time) {
         // Stop moving if time becomes more than 15
-        drive.driveCartesian(0, 0, 0);
+        DriveSubsystem.drive(0, 0, 0, gyroangle);
         endEffectorLeft.set(0);
         endEffectorRight.set(0);
         // Needs code that switches mode to Teleop when time is over 15 seconds.
@@ -411,7 +388,7 @@ public class Robot extends TimedRobot {
       case kjustMoveForward:
         // Move forward for 4 seconds at higher speed
         if (autoTime > 0 + auto_wait_time && autoTime < 2 + auto_wait_time){
-         drive.driveCartesian(0.3,0,0);
+          DriveSubsystem.drive(0.3,0,0, gyroangle);
         }
  
         break;
@@ -428,6 +405,7 @@ public class Robot extends TimedRobot {
   // This function is called periodically during operator control. *
   @Override
   public void teleopPeriodic() {
+
     getlimelightcontrols();
     SmartDashboard.putNumber("Gyro Angle", gyro.getAngle());
     if (drive_controller.getAButton()) {
@@ -653,10 +631,11 @@ private void setElevatorPosition(PIDController pidController, double targetPosit
         NetworkTableInstance.getDefault().getTable("limelight").getEntry("pipeline").setNumber(2);
         
         if (tv == 1) {
-          drive.driveCartesian(
+          DriveSubsystem.drive(
             drive_controller.getLeftY()*-.3, 
             -MathUtil.clamp(strafeController.calculate(tx, 0), -.5, .5), 
-            -MathUtil.clamp(turnController.calculate((gyro.getAngle() + offset) % 360, tagAngle),-.1,.1)
+            -MathUtil.clamp(turnController.calculate((gyro.getAngle() + offset) % 360, tagAngle),-.1,.1),
+            gyroangle
             );
           //drive.driveCartesian(drive_controller.getLeftY()*-.6, -MathUtil.clamp(strafeController.calculate(tx, 0), -.5, .5), MathUtil.clamp(turnController.calculate(gyroangle.getDegrees(), tagAngle),-.3,.3));
 
@@ -687,10 +666,11 @@ private void setElevatorPosition(PIDController pidController, double targetPosit
       NetworkTableInstance.getDefault().getTable("limelight").getEntry("pipeline").setNumber(3); 
 
       if (tv == 1) {
-      drive.driveCartesian(
+        DriveSubsystem.drive(
         drive_controller.getLeftY()*-.6, 
         -MathUtil.clamp(strafeController.calculate(tx, 0), -.5, .5), 
-        -MathUtil.clamp(turnController.calculate((gyro.getAngle() + offset) % 360, tagAngle),-.1,.1)
+        -MathUtil.clamp(turnController.calculate((gyro.getAngle() + offset) % 360, tagAngle),-.1,.1),
+        gyroangle
         );
       }
       // drive.driveCartesian(
@@ -733,13 +713,14 @@ private void setElevatorPosition(PIDController pidController, double targetPosit
       if (tv == 1) {
         try {
           // Strafe to the April tag
-          drive.driveCartesian(
+          DriveSubsystem.drive(
               0,
               -MathUtil.clamp(strafeController.calculate(tx, 0), -.3, .3),
-              0);
+              0,
+              gyroangle);
           // Set robot to manual control if the robot can't see a April tag
         } catch (Exception e) {
-          drive.driveCartesian(
+          DriveSubsystem.drive(
               -(drive_controller.getLeftY() * movement_sensetivity),
               drive_controller.getLeftX() * movement_sensetivity,
               drive_controller.getRightX() * turn_sensetivity,
@@ -748,10 +729,10 @@ private void setElevatorPosition(PIDController pidController, double targetPosit
       }
 
     } else if (drive_controller.getLeftTriggerAxis() >= 0.2) {
-      leftBack.set(0);
-      leftFront.set(0);
-      rightFront.set(0);
-      rightBack.set(0);
+      // Brake mode
+      DriveSubsystem.brake();
+      
+      
       // When you hold the Left Trigger
       // Set the limelight to the left offset of the April tag
       /* 
@@ -777,16 +758,16 @@ private void setElevatorPosition(PIDController pidController, double targetPosit
 
     } else if (drive_controller.getPOV() == 90) {
       // Strafe right
-      drive.driveCartesian(0, 0.1, 0);
+      DriveSubsystem.drive(0, 0.1, 0, gyroangle);
 
     } else if (drive_controller.getPOV() == 270) {
-      drive.driveCartesian(0, -0.1, 0);
+      DriveSubsystem.drive(0, -0.1, 0, gyroangle);
 
     } else if (drive_controller.getPOV() == 0){
-      drive.driveCartesian(.4, 0, 0);
+      DriveSubsystem.drive(.4, 0, 0, gyroangle);
 
     } else if (drive_controller.getPOV() == 180){
-      drive.driveCartesian(-.4, 0, 0, gyroangle);
+      DriveSubsystem.drive(-.4, 0, 0, gyroangle);
       //leftFront.set(0.5);
       //rightBack.set(0.5);
       //leftBack.set(0.5);
@@ -795,7 +776,7 @@ private void setElevatorPosition(PIDController pidController, double targetPosit
     } else if (drive_controller.getYButton()) {
       if (tv == 1) {
         // Moves forward using travelTo PID Controller
-        drive.driveCartesian(travelToController.calculate(ta, movePoint), 0, 0);
+        DriveSubsystem.drive(travelToController.calculate(ta, movePoint), 0, 0, gyroangle);
       }
 
 
@@ -803,7 +784,7 @@ private void setElevatorPosition(PIDController pidController, double targetPosit
    
     } else {
       
-      drive.driveCartesian(
+      DriveSubsystem.drive(
           (-drive_controller.getLeftY() * movement_sensetivity),
           drive_controller.getLeftX() * movement_sensetivity,
           drive_controller.getRightX() * turn_sensetivity,
