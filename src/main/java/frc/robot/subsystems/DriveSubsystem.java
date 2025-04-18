@@ -9,7 +9,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 
 public class DriveSubsystem {
   private final MecanumDrive drive;
-  private final AnalogGyro gyro;
+  //rivate final AnalogGyro gyro;
 
   // Define motors
   private final SparkMax leftFront = new SparkMax(6, MotorType.kBrushless);
@@ -20,7 +20,7 @@ public class DriveSubsystem {
   public DriveSubsystem() {
     // Initialize motors and drive system
     drive = new MecanumDrive(leftFront, leftBack, rightFront, rightBack);
-    gyro = new AnalogGyro(0);
+   // gyro = new AnalogGyro(0);
   }
 
   public void drive(XboxController controller, AnalogGyro gyro) {

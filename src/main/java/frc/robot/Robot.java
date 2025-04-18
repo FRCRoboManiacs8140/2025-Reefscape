@@ -71,10 +71,12 @@ public class Robot extends TimedRobot {
   private PIDControllers pidControllers;
 
   // Define motors
+  /* 
   private final SparkMax leftFront = new SparkMax(6, MotorType.kBrushless);
   private final SparkMax rightFront = new SparkMax(1, MotorType.kBrushless);
   private final SparkMax leftBack = new SparkMax(4, MotorType.kBrushless);
   private final SparkMax rightBack = new SparkMax(2, MotorType.kBrushless);
+  */
 
   private final SparkMax elevatorRight = new SparkMax(3, MotorType.kBrushless);
   private final SparkMax elevatorLeft = new SparkMax(5, MotorType.kBrushless);
@@ -84,13 +86,13 @@ public class Robot extends TimedRobot {
 
   // private final MecanumDrive drive = new MecanumDrive(leftFront, leftBack,
   // rightFront, rightBack);
-  private final MecanumDrive drive = new MecanumDrive(leftFront, leftBack, rightFront, rightBack);
+  //private final MecanumDrive drive = new MecanumDrive(leftFront, leftBack, rightFront, rightBack);
 
   private final XboxController drive_controller = new XboxController(0);
   private final XboxController opController = new XboxController(1);
 
-  // private final ADIS16470_IMU gyro = new ADIS16470_IMU();
-  private final AnalogGyro gyro = new AnalogGyro(0);
+   private final ADIS16470_IMU gyro = new ADIS16470_IMU();
+ // private final AnalogGyro gyro = new AnalogGyro(0);
 
   // private final for encoder
   private final RelativeEncoder elevator_encoder = elevatorRight.getEncoder();
