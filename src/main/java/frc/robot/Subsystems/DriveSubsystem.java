@@ -50,7 +50,7 @@ public class DriveSubsystem extends SubsystemBase {
 
     public static void drive(double xSpeed, double ySpeed, double rotation, Rotation2d gyroAngle) {
          // Define mecanum drive
-    drive.driveCartesian(0, 0, 0);
+    drive.driveCartesian(xSpeed, ySpeed, rotation, gyroAngle);
 
     }
 
@@ -60,6 +60,9 @@ public class DriveSubsystem extends SubsystemBase {
         rightFront.set(0);
         leftBack.set(0);
         rightBack.set(0);
+    }
+    public static void controlls(){
+        
     }
     
     public static void SmartDashboardDrive(){
