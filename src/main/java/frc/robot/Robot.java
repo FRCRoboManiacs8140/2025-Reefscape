@@ -375,23 +375,14 @@ public class Robot extends TimedRobot {
     CameraSubsystem.getVariables();
     getlimelightcontrols();
     SmartDashboard.putNumber("Gyro Angle", gyro.getAngle());
-    if (drive_controller.getAButton()) {
-      gyro.reset();
-    }
     PIDController elevatorPID = new PIDController(0.05, 0, 0);
     PIDController elevatorbottomPID = new PIDController(0.025, 0, 0);
     SmartDashboard.putNumber("Elevator Position", elevatorSubsystem.getEncoder());
     // double elevator_encoder_teleop = SmartDashboard.getNumber("Elevator
     // Position", elevator_encoder.getPosition());
 
-    // Code for Limit Switch
-    if (!elevatorLimit.get()) {
-      ElevatorSubsystem.stop();
-      ElevatorSubsystem.resetEncoder();
-    }
-
     // Y makes elevator go up manually
-    else if (opController.getPOV() == 0) {
+    if (opController.getPOV() == 0) {
       ElevatorSubsystem.set(0.1);
       // A makes elevator go up manually
     } else if (opController.getPOV() == 180) {
@@ -399,27 +390,6 @@ public class Robot extends TimedRobot {
 
       // IMPORTANT setpoints for opController levels need to be set and tuned!
 
-      // Right Bumper is L1
-    } else if (opController.getAButton()) {
-      ElevatorSubsystem.set(elevatorPID.calculate(elevatorSubsystem.getEncoder(), L1Position)*.5);
-      // Left Bummper is L2
-    } else if (opController.getXButton()) {
-      ElevatorSubsystem.set(elevatorPID.calculate(elevatorSubsystem.getEncoder(), L2Position)*.5);
-      // Right Trigger is L3
-    } else if (opController.getYButton()) {
-      ElevatorSubsystem.set(elevatorPID.calculate(elevatorSubsystem.getEncoder(), L3Position)*.5);
-      // Left Trigger is L4
-    // } else if (opController.getBButton()) {
-    //   elevatorLeft.set(elevatorPID.calculate(elevator_encoder.getPosition(), 100));
-    //   elevatorRight.set(elevatorPID.calculate(elevator_encoder.getPosition(), 100));
-
-    // Returns to bottom for intaking
-    } else if (opController.getBButton()) {
-      ElevatorSubsystem.set(elevatorbottomPID.calculate(elevatorSubsystem.getEncoder(), intakePosition)*.5);
-    } else {
-      // Stop the elevator from moving if no buttons are being held
-      ElevatorSubsystem.stop();
-    }
     controlElevator();
     // Code for End Effector
 
@@ -446,6 +416,7 @@ public class Robot extends TimedRobot {
       opController.setRumble(GenericHID.RumbleType.kLeftRumble,0);
       opController.setRumble(GenericHID.RumbleType.kRightRumble,0);
     }
+  }
   }
     
   
