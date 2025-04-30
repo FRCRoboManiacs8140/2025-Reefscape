@@ -20,10 +20,10 @@ public class PIDSubsystem extends SubsystemBase {
     private double kD = 0;
 
     // PID Controllers
-    private PIDController travelToController;
-    private PIDController strafeController;
-    private PIDController anglePreserve;
-    private PIDController elevatorPID;
+    private static PIDController travelToController;
+    private static PIDController strafeController;
+    private static PIDController anglePreserve;
+    private static PIDController elevatorPID;
 
     public PIDSubsystem(){
         // Initialize travelToController
@@ -64,19 +64,19 @@ public class PIDSubsystem extends SubsystemBase {
     }
 
      // Getter methods for PID controllers
-     public PIDController getTravelToController() {
+     public static PIDController getTravelToController() {
         return travelToController;
     }
 
-    public PIDController getStrafeController() {
+    public static PIDController getStrafeController() {
         return strafeController;
     }
 
-    public PIDController getAnglePreserve() {
+    public static PIDController getAnglePreserve() {
         return anglePreserve;
     }
 
-    public PIDController getElevatorPID() {
+    public static PIDController getElevatorPID() {
         return elevatorPID;
     }
 }
