@@ -27,6 +27,8 @@ import com.revrobotics.spark.SparkBase;
 import frc.robot.Subsystems.CameraSubsystem;
 import frc.robot.Subsystems.DriveSubsystem;
 import frc.robot.Subsystems.PIDSubsystem;
+import frc.robot.Subsystems.ElevatorSubsystem;
+
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.cscore.CvSink;
 import edu.wpi.first.cscore.CvSource;
@@ -82,16 +84,11 @@ public class Robot extends TimedRobot {
   private DriveSubsystem driveSubsystem;
   private CameraSubsystem cameraSubsystem;
   private PIDSubsystem pidSubsystem;
+  private ElevatorSubsystem elevatorSubsystem;
 
 
   SparkMaxConfig driveConfignormal = new SparkMaxConfig();
   SparkMaxConfig driveConfiginverted = new SparkMaxConfig();
-
-  private final SparkMax elevatorRight = new SparkMax(3, MotorType.kBrushless);
-  private final SparkMax elevatorLeft = new SparkMax(5, MotorType.kBrushless);
-
-  private final SparkMax endEffectorLeft = new SparkMax(7, MotorType.kBrushless);
-  private final SparkMax endEffectorRight = new SparkMax(8, MotorType.kBrushless);
 
   //private final Spark blinkinSpark = new Spark(3);
 
@@ -104,8 +101,6 @@ public class Robot extends TimedRobot {
 
   private final ADIS16470_IMU gyro = new ADIS16470_IMU();
   //private final ADXRS450_Gyro gyro = new ADXRS450_Gyro();
-  // private final for encoder
-  private final RelativeEncoder elevator_encoder = elevatorRight.getEncoder();
 
   public double autonomousStartTime, timeElapsed;
   public double strafeStartTime = 0;
@@ -184,14 +179,6 @@ public class Robot extends TimedRobot {
     CvSource outputStream = CameraServer.putVideo("Intake Camera with box", 320, 240);
     outputStream.setFPS(15);
     outputStream.setResolution(320,240);
-    // PID for travel to autonomous movement
-    SmartDashboard.putNumber("travel_to_integral_PID", 0.01);
-    SmartDashboard.putNumber("travel_to_proportional_PID", 0.06);
-    SmartDashboard.putNumber("travel_to_derivative_PID", 0.05);
-    // PID for strafe to autonomous movement
-    SmartDashboard.putNumber("strafe_to_integral_PID", .0);
-    SmartDashboard.putNumber("strafe_to_proportional_PID", .02);
-    SmartDashboard.putNumber("strafe_to_derivative_PID", 0);
 
   }
 
@@ -262,6 +249,7 @@ public class Robot extends TimedRobot {
 
     CameraSubsystem.getVariables();
     PIDSubsystem pidSubsystem = new PIDSubsystem();
+    ElevatorSubsystem elevatorSubsystem = new ElevatorSubsystem();
     pidSubsystem.updatePIDCoefficients();
     pidSubsystem.getStrafeController();
     pidSubsystem.getTravelToController();
@@ -302,16 +290,13 @@ public class Robot extends TimedRobot {
           else if (autoTime > 1 + auto_wait_time && autoTime < 6 + auto_wait_time) {
           DriveSubsystem.drive(.2, -MathUtil.clamp(PIDSubsystem.getStrafeController().calculate(CameraSubsystem.getX(), 0), -.1,1),0, gyroangle);
         } else if (autoTime > 6 + auto_wait_time && autoTime < 7 + auto_wait_time) {
-          elevatorLeft.set(elevatorPID.calculate(elevator_encoder.getPosition(), autoElevatorHeight)*.5);
-          elevatorRight.set(elevatorPID.calculate(elevator_encoder.getPosition(), autoElevatorHeight)*.5);
+          ElevatorSubsystem.set(elevatorPID.calculate(elevatorSubsystem.getEncoder(), autoElevatorHeight)*.5);
         } else if (autoTime > 7 + auto_wait_time && autoTime < 9 + auto_wait_time) {
-          endEffectorLeft.set(.5);
-          endEffectorRight.set(-.5);
+          ElevatorSubsystem.scoreL1();
         } else if (autoTime > 9 + auto_wait_time) {
           // Stop moving if time becomes more than 15
           DriveSubsystem.drive(0, 0, 0, gyroangle);
-          endEffectorLeft.set(0);
-          endEffectorRight.set(0);
+          ElevatorSubsystem.stop();
           // Needs code that switches mode to Teleop when time is over 15 seconds.
         }
         break;
@@ -323,15 +308,12 @@ public class Robot extends TimedRobot {
           DriveSubsystem.drive(0.25, 0, 0, gyroangle);
         } else if (autoTime > 5 + auto_wait_time && autoTime < 7 + auto_wait_time){
           // Eject coral onto L1
-          endEffectorLeft.set(.5);
-          endEffectorRight.set(-.25);
+          ElevatorSubsystem.scoreL1();
         }  else if (autoTime > 7 + auto_wait_time) {
           // Stop moving if time becomes more than 15
           DriveSubsystem.drive(0, 0, 0, gyroangle);
-          endEffectorLeft.set(0);
-          endEffectorRight.set(0);
-          elevatorRight.set(0);
-          elevatorLeft.set(0);
+          ElevatorSubsystem.stopEndEffector();
+          ElevatorSubsystem.stop();
         }
         break;
 
@@ -352,18 +334,14 @@ public class Robot extends TimedRobot {
         else if (autoTime > (1 + auto_wait_time) && autoTime < (6 + auto_wait_time)) {
         DriveSubsystem.drive(.2, -MathUtil.clamp(PIDSubsystem.getStrafeController().calculate(CameraSubsystem.getX(), 0), -.1,1), 0, gyroangle);
       } else if (autoTime > (6 + auto_wait_time) && autoTime < (7 + auto_wait_time)) {
-        elevatorLeft.set(elevatorPID.calculate(elevator_encoder.getPosition(), autoElevatorHeight)*.5);
-        elevatorRight.set(elevatorPID.calculate(elevator_encoder.getPosition(), autoElevatorHeight)*.5);
+        ElevatorSubsystem.set(elevatorPID.calculate(elevatorSubsystem.getEncoder(), autoElevatorHeight)*.5);
       } else if (autoTime > (7 + auto_wait_time) && autoTime < (9 + auto_wait_time)) {
-        endEffectorLeft.set(.5);
-        endEffectorRight.set(-.5);
-        elevatorRight.set(0);
-        elevatorLeft.set(0);
+        ElevatorSubsystem.setEndEffector(0.5);
+        ElevatorSubsystem.stop();
       } else if (autoTime > 9 + auto_wait_time) {
         // Stop moving if time becomes more than 15
         DriveSubsystem.drive(0, 0, 0, gyroangle);
-        endEffectorLeft.set(0);
-        endEffectorRight.set(0);
+        ElevatorSubsystem.stopEndEffector();
         // Needs code that switches mode to Teleop when time is over 15 seconds.
       }
       break;
@@ -393,8 +371,8 @@ public class Robot extends TimedRobot {
     pidSubsystem.updatePIDCoefficients();
     pidSubsystem.getStrafeController();
     pidSubsystem.getTravelToController();
-    pidSubsystem.getAnglePreserve();
-    cameraSubsystem.getVariables();
+    PIDSubsystem.getAnglePreserve();
+    CameraSubsystem.getVariables();
     getlimelightcontrols();
     SmartDashboard.putNumber("Gyro Angle", gyro.getAngle());
     if (drive_controller.getAButton()) {
@@ -402,40 +380,34 @@ public class Robot extends TimedRobot {
     }
     PIDController elevatorPID = new PIDController(0.05, 0, 0);
     PIDController elevatorbottomPID = new PIDController(0.025, 0, 0);
-    SmartDashboard.putNumber("Elevator Position", elevator_encoder.getPosition());
+    SmartDashboard.putNumber("Elevator Position", elevatorSubsystem.getEncoder());
     // double elevator_encoder_teleop = SmartDashboard.getNumber("Elevator
     // Position", elevator_encoder.getPosition());
 
     // Code for Limit Switch
     if (!elevatorLimit.get()) {
-      elevatorLeft.set(0);
-      elevatorRight.set(0);
-      elevator_encoder.setPosition(0);
+      ElevatorSubsystem.stop();
+      ElevatorSubsystem.resetEncoder();
     }
 
     // Y makes elevator go up manually
     else if (opController.getPOV() == 0) {
-      elevatorLeft.set(0.1);
-      elevatorRight.set(0.1);
+      ElevatorSubsystem.set(0.1);
       // A makes elevator go up manually
     } else if (opController.getPOV() == 180) {
-      elevatorLeft.set(-0.1);
-      elevatorRight.set(-0.1);
+      ElevatorSubsystem.set(-0.1);
 
       // IMPORTANT setpoints for opController levels need to be set and tuned!
 
       // Right Bumper is L1
     } else if (opController.getAButton()) {
-      elevatorLeft.set(elevatorPID.calculate(elevator_encoder.getPosition(), L1Position)*.5);
-      elevatorRight.set(elevatorPID.calculate(elevator_encoder.getPosition(), L1Position)*.5);
+      ElevatorSubsystem.set(elevatorPID.calculate(elevatorSubsystem.getEncoder(), L1Position)*.5);
       // Left Bummper is L2
     } else if (opController.getXButton()) {
-      elevatorLeft.set(elevatorPID.calculate(elevator_encoder.getPosition(), L2Position)*.5);
-      elevatorRight.set(elevatorPID.calculate(elevator_encoder.getPosition(), L2Position)*.5);
+      ElevatorSubsystem.set(elevatorPID.calculate(elevatorSubsystem.getEncoder(), L2Position)*.5);
       // Right Trigger is L3
     } else if (opController.getYButton()) {
-      elevatorLeft.set(elevatorPID.calculate(elevator_encoder.getPosition(), L3Position)*.5);
-      elevatorRight.set(elevatorPID.calculate(elevator_encoder.getPosition(), L3Position)*.5);
+      ElevatorSubsystem.set(elevatorPID.calculate(elevatorSubsystem.getEncoder(), L3Position)*.5);
       // Left Trigger is L4
     // } else if (opController.getBButton()) {
     //   elevatorLeft.set(elevatorPID.calculate(elevator_encoder.getPosition(), 100));
@@ -443,42 +415,34 @@ public class Robot extends TimedRobot {
 
     // Returns to bottom for intaking
     } else if (opController.getBButton()) {
-      elevatorLeft.set(elevatorbottomPID.calculate(elevator_encoder.getPosition(), intakePosition)*.5);
-      elevatorRight.set(elevatorbottomPID.calculate(elevator_encoder.getPosition(), intakePosition)*.5);
+      ElevatorSubsystem.set(elevatorbottomPID.calculate(elevatorSubsystem.getEncoder(), intakePosition)*.5);
     } else {
       // Stop the elevator from moving if no buttons are being held
-      elevatorLeft.set(0);
-      elevatorLeft.set(0);
+      ElevatorSubsystem.stop();
     }
     controlElevator();
     // Code for End Effector
 
     if (opController.getLeftTriggerAxis() > 0.2){
-      endEffectorLeft.set(.07);
-      endEffectorRight.set(-.07);
+      ElevatorSubsystem.setEndEffector(-.7);
       
     // Left Bumper shoots for L1
     } else if(opController.getLeftBumperButton()){
-      endEffectorLeft.set(.5);
-      endEffectorRight.set(-.2);
+      ElevatorSubsystem.scoreL1();
     // Right Bumper is to eject coral
      }else if (opController.getRightBumperButton()){
-      endEffectorLeft.set(-.05);
-      endEffectorRight.set(.05);
+      ElevatorSubsystem.score();
     // If Right Trigger is pressed eject coral 
     } else if (opController.getRightTriggerAxis() > 0.2){
-      endEffectorLeft.set(.5);
-      endEffectorRight.set(-.5);
+      ElevatorSubsystem.score();
     // If the beam break is tripped, the intake automatically spins until it is cleared
     } else if (!intakebeambreak.get()) {
-      endEffectorLeft.set(.15);
-      endEffectorRight.set(-.15);
+      ElevatorSubsystem.set(0.15);
       opController.setRumble(GenericHID.RumbleType.kLeftRumble,.5);
       opController.setRumble(GenericHID.RumbleType.kRightRumble,.5);
       // If nothing is held the End Effector does not spin
     } else {
-      endEffectorLeft.set(0);
-      endEffectorRight.set(0);
+      ElevatorSubsystem.stopEndEffector();
       opController.setRumble(GenericHID.RumbleType.kLeftRumble,0);
       opController.setRumble(GenericHID.RumbleType.kRightRumble,0);
     }
@@ -489,28 +453,24 @@ public class Robot extends TimedRobot {
   private void controlElevator() {
     PIDController elevatorPID = new PIDController(0.05, 0, 0);
     PIDController elevatorbottomPID = new PIDController(0.025, 0, 0);
-    SmartDashboard.putNumber("Elevator Position", elevator_encoder.getPosition());
+    SmartDashboard.putNumber("Elevator Position", elevatorSubsystem.getEncoder());
     SmartDashboard.putBoolean("Elevator Limit", elevatorLimit.get());
 
     if (!elevatorLimit.get()) {
-        elevator_encoder.setPosition(0);
+        ElevatorSubsystem.resetEncoder();
     }
 
     if (opController.getPOV() == 0) {
-        elevatorLeft.set(0.1);
-        elevatorRight.set(0.1);
+        ElevatorSubsystem.set(0.1);
     } else if (opController.getPOV() == 180) {
-        elevatorLeft.set(-0.1);
-        elevatorRight.set(-0.1);
-        if (!elevatorLimit.get() && elevatorRight.get() < 0) {
-            elevatorLeft.set(0);
-            elevatorRight.set(0);
+        ElevatorSubsystem.setEndEffector(-0.1);
+        if (!elevatorLimit.get() && elevatorSubsystem.getEncoder() < 0) {
+            ElevatorSubsystem.stop();
         }
     } else if (opController.getAButton()) {
         setElevatorPosition(elevatorPID, L1Position);
-        if (!elevatorLimit.get() && elevatorRight.get() < 0) {
-          elevatorLeft.set(0);
-          elevatorRight.set(0);
+        if (!elevatorLimit.get() && elevatorSubsystem.getEncoder() < 0) {
+          ElevatorSubsystem.stop();
         }
     } else if (opController.getXButton()) {
         setElevatorPosition(elevatorPID, L2Position);
@@ -518,20 +478,17 @@ public class Robot extends TimedRobot {
         setElevatorPosition(elevatorPID, L3Position);
     } else if (opController.getBButton()) {
         setElevatorPosition(elevatorbottomPID, intakePosition);
-        if (!elevatorLimit.get() && elevatorRight.get() < 0) {
-            elevatorLeft.set(0);
-            elevatorRight.set(0);
+        if (!elevatorLimit.get() && elevatorSubsystem.getEncoder() < 0) {
+          ElevatorSubsystem.stop();
         }
     } else {
-        elevatorLeft.set(0);
-        elevatorRight.set(0);
+        ElevatorSubsystem.stop();
     }
 }
 
 private void setElevatorPosition(PIDController pidController, double targetPosition) {
-    double output = pidController.calculate(elevator_encoder.getPosition(), targetPosition) * 0.5;
-    elevatorLeft.set(output);
-    elevatorRight.set(output);
+    double output = pidController.calculate(elevatorSubsystem.getEncoder(), targetPosition) * 0.5;
+    ElevatorSubsystem.set(output);
 }
 
   // Runs the limelight function
