@@ -24,7 +24,10 @@ import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkBase;
 
+import frc.robot.Subsystems.CameraSubsystem;
 import frc.robot.Subsystems.DriveSubsystem;
+import frc.robot.Subsystems.CameraSubsystem;
+import frc.robot.Subsystems.PIDSubsystem;
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.cscore.CvSink;
 import edu.wpi.first.cscore.CvSource;
@@ -44,6 +47,7 @@ import edu.wpi.first.wpilibj.drive.MecanumDrive;
 import edu.wpi.first.wpilibj.motorcontrol.Spark;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.PIDSubsystem;
 import edu.wpi.first.wpilibj.AnalogGyro;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.GenericHID;
@@ -78,6 +82,8 @@ public class Robot extends TimedRobot {
   private final SendableChooser<String> m_levelChooser = new SendableChooser<>();
 
   private DriveSubsystem driveSubsystem;
+  private CameraSubsystem cameraSubsystem;
+  private PIDSubsystem pidSubsystem;
 
 
   SparkMaxConfig driveConfignormal = new SparkMaxConfig();
@@ -255,20 +261,8 @@ public class Robot extends TimedRobot {
 
   public void autonomousPeriodic() {
 
-    // Pls don't delete the code below it is not a copy
-    // This is to allow PID to work during autonomous.
+    CameraSubsystem.getVariables();
 
-    // Boolean that is 1 if a target is detected, 0 if not
-    double tv = NetworkTableInstance.getDefault().getTable("limelight").getEntry("tv").getDouble(0);
-    // X angle distance from center of camera frame to center of target
-    double tx = NetworkTableInstance.getDefault().getTable("limelight").getEntry("tx").getDouble(0);
-    // Y angle distance from center of camera frame to center of target
-    double ty = NetworkTableInstance.getDefault().getTable("limelight").getEntry("ty").getDouble(0);
-    // Area of the camera frame that the object takes up, can be used to estimate
-    // how close the object is
-    double ta = NetworkTableInstance.getDefault().getTable("limelight").getEntry("ta").getDouble(0);
-    double botpose[] = NetworkTableInstance.getDefault().getTable("limelight").getEntry("botpose")
-        .getDoubleArray(new double[6]);
     int id = NetworkTableInstance.getDefault().getTable("limelight").getEntry("tid").getNumber(0).intValue();
     double autoTime = SmartDashboard.getNumber("Time elapsed", 0);
     // values for travel to; PID
