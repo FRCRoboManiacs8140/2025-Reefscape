@@ -637,30 +637,7 @@ private void setElevatorPosition(PIDController pidController, double targetPosit
             -MathUtil.clamp(turnController.calculate((gyro.getAngle() + offset) % 360, tagAngle),-.1,.1),
             gyroangle
             );
-          //drive.driveCartesian(drive_controller.getLeftY()*-.6, -MathUtil.clamp(strafeController.calculate(tx, 0), -.5, .5), MathUtil.clamp(turnController.calculate(gyroangle.getDegrees(), tagAngle),-.3,.3));
-
-        // if (tv == 1) {
-        //     if (Math.abs(tx) < 18){
-        //       drive.driveCartesian(
-        //         drive_controller.getLeftY()*-.6, 
-        //         -MathUtil.clamp(strafeController.calculate(tx, 0), -.5, .5), 
-        //         MathUtil.clamp(turnController.calculate(gyroangle.getDegrees(), tagAngle),-.2,.2)
-        //         );
-        //     } else {
-        //       drive.driveCartesian(
-        //         drive_controller.getLeftY()*-.6, 
-        //         -MathUtil.clamp(strafeController.calculate(tx, 0), -.5, .5), 
-        //         0
-        //         );
-        //     }
-        //   }
-
-        //   getTagAngle(id);
-        // drive.driveCartesian(0, 0, turnController.calculate(gyro.getAngle() % 360, tagAngle));
-        // }
-        // if (Math.abs(gyro.getAngle() - tagAngle) < 1){
-        //   drive.driveCartesian(0, -MathUtil.clamp(strafeController.calculate(tx, 0), (-(33-ta)/100), ((33-ta)/100)), anglePreserve.calculate(gyro.getAngle(), 0));
-      
+         
         }
     } else if (drive_controller.getRightBumper()) {
       NetworkTableInstance.getDefault().getTable("limelight").getEntry("pipeline").setNumber(3); 
@@ -673,36 +650,6 @@ private void setElevatorPosition(PIDController pidController, double targetPosit
         gyroangle
         );
       }
-      // drive.driveCartesian(
-      // drive_controller.getLeftY()*-.6, 
-      // -MathUtil.clamp(strafeController.calculate(tx, 0), -.5, .5), 
-      // MathUtil.clamp(turnController.calculate(gyroangle.getDegrees(), tagAngle),-.1,.1)
-      // );
-
-       // if (tv == 1) {
-        //     if (Math.abs(tx) < 18){
-        //       drive.driveCartesian(
-        //         drive_controller.getLeftY()*-.6, 
-        //         -MathUtil.clamp(strafeController.calculate(tx, 0), -.5, .5), 
-        //         MathUtil.clamp(turnController.calculate(gyroangle.getDegrees(), tagAngle),-.2,.2)
-        //         );
-        //     } else {
-        //       drive.driveCartesian(
-        //         drive_controller.getLeftY()*-.6, 
-        //         -MathUtil.clamp(strafeController.calculate(tx, 0), -.5, .5), 
-        //         0
-        //         );
-        //     }
-        //   }
-
-
-      // if (tv == 1) {
-      //   getTagAngle(id);
-      //   drive.driveCartesian(0, 0, turnController.calculate(gyro.getAngle() % 360, tagAngle));
-      // }
-      // if (Math.abs(gyro.getAngle() - tagAngle) < 1){
-      //   drive.driveCartesian(0, MathUtil.clamp(strafeController.calculate(tx, 0), (-(33-ta)/100), ((33-ta)/100)), anglePreserve.calculate(gyro.getAngle(), 0));
-      // }
 
   /// Strafe Only Auto Aligning ----------------------------
 
@@ -732,28 +679,6 @@ private void setElevatorPosition(PIDController pidController, double targetPosit
       // Brake mode
       DriveSubsystem.brake();
       
-      
-      // When you hold the Left Trigger
-      // Set the limelight to the left offset of the April tag
-      /* 
-      NetworkTableInstance.getDefault().getTable("limelight").getEntry("pipeline").setNumber(2);
-      // Check to see if the robot can see an April tag
-      if (tv == 1) {
-        try {
-          // Strafe to the April tag
-          drive.driveCartesian(
-              0,
-              MathUtil.clamp(tx*.2,-.1, .1)
-,              0);
-          // Set robot to manual control if the robot can't see a April tag
-        } catch (Exception e) {
-          drive.driveCartesian(
-              -drive_controller.getLeftY() * movement_sensetivity,
-              drive_controller.getLeftX() * movement_sensetivity,
-              drive_controller.getRightX() * turn_sensetivity,
-              gyroangle);
-      }
- */
       /// Manual Aligning-----------------------
 
     } else if (drive_controller.getPOV() == 90) {
