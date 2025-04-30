@@ -61,22 +61,6 @@ public class DriveSubsystem extends SubsystemBase {
         leftBack.set(0);
         rightBack.set(0);
     }
-    public static void controlls(){
-        if (drive_controller.getLeftBumper()) {
-            NetworkTableInstance.getDefault().getTable("limelight").getEntry("pipeline").setNumber(2);
-            
-            if (tv == 1) {
-              DriveSubsystem.drive(
-                drive_controller.getLeftY()*-.3, 
-                -MathUtil.clamp(strafeController.calculate(tx, 0), -.5, .5), 
-                -MathUtil.clamp(turnController.calculate((gyro.getAngle() + offset) % 360, tagAngle),-.1,.1),
-                gyroangle
-                );
-             
-            }
-        }
-        
-    }
     
     public static void SmartDashboardDrive(){
      SmartDashboard.putNumber("Front Left", leftFront().get());
