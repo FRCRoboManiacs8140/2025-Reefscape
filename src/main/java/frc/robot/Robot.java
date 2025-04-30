@@ -26,7 +26,6 @@ import com.revrobotics.spark.SparkBase;
 
 import frc.robot.Subsystems.CameraSubsystem;
 import frc.robot.Subsystems.DriveSubsystem;
-import frc.robot.Subsystems.CameraSubsystem;
 import frc.robot.Subsystems.PIDSubsystem;
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.cscore.CvSink;
@@ -47,7 +46,6 @@ import edu.wpi.first.wpilibj.drive.MecanumDrive;
 import edu.wpi.first.wpilibj.motorcontrol.Spark;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.PIDSubsystem;
 import edu.wpi.first.wpilibj.AnalogGyro;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.GenericHID;
@@ -157,6 +155,7 @@ public class Robot extends TimedRobot {
   // *
   @Override
   public void robotInit() {
+    cameraSubsystem = new CameraSubsystem();
     driveConfignormal.idleMode(IdleMode.kCoast);
     driveConfiginverted.idleMode(IdleMode.kCoast);
     driveConfiginverted.inverted(true);
@@ -262,29 +261,19 @@ public class Robot extends TimedRobot {
   public void autonomousPeriodic() {
 
     CameraSubsystem.getVariables();
-
+    PIDSubsystem pidSubsystem = new PIDSubsystem();
+    pidSubsystem.updatePIDCoefficients();
+    pidSubsystem.getStrafeController();
+    pidSubsystem.getTravelToController();
+    pidSubsystem.getAnglePreserve();
+    CameraSubsystem.getVariables();
+    CameraSubsystem camerasubsytem;
+    PIDController elevatorPID = new PIDController(0.05, 0, 0);
+  
     int id = NetworkTableInstance.getDefault().getTable("limelight").getEntry("tid").getNumber(0).intValue();
     double autoTime = SmartDashboard.getNumber("Time elapsed", 0);
     // values for travel to; PID
-    double tkI = SmartDashboard.getNumber("travel_to_integral_PID", 0.);
-    double tkP = SmartDashboard.getNumber("travel_to_proportional_PID", 0.005);
-    double tkD = SmartDashboard.getNumber("travel_to_derivative_PID", 0);
-    // values for strafe; PID
-    double kI = SmartDashboard.getNumber("strafe_to_integral_PID", .0);
-    double kP = SmartDashboard.getNumber("strafe_to_proportional_PID", .02);
-    double kD = SmartDashboard.getNumber("strafe_to_derivative_PID", 0);
 
-    PIDController travelToController = new PIDController(tkP, tkI, tkD);
-    travelToController.setIntegratorRange(-5, 5);
-    PIDController strafeController = new PIDController(kP, kI, kD);
-    strafeController.setIntegratorRange(-5, 5);
-    strafeController.setIZone(1);
-    PIDController turnController = new PIDController(.02, .1, 0);
-    double tagAngle = getTagAngle(id);
-
-    PIDController anglePreserve = new PIDController(.01, 0, 0);
-    PIDController elevatorPID = new PIDController(0.08, 0.25, 0);
-    elevatorPID.setIntegratorRange(-5, 5);
     NetworkTableInstance.getDefault().getTable("limelight").getEntry("pipeline").setNumber(0);
     Rotation2d gyroangle = Rotation2d.fromDegrees(gyro.getAngle() + offset);
     double auto_wait_time = SmartDashboard.getNumber("Auto Wait Time", 0);
@@ -311,7 +300,7 @@ public class Robot extends TimedRobot {
           DriveSubsystem.drive(.2, 0, 0, gyroangle);
         }
           else if (autoTime > 1 + auto_wait_time && autoTime < 6 + auto_wait_time) {
-          DriveSubsystem.drive(.2, -MathUtil.clamp(strafeController.calculate(tx, 0), -.1,1),0, gyroangle);
+          DriveSubsystem.drive(.2, -MathUtil.clamp(PIDSubsystem.getStrafeController().calculate(CameraSubsystem.getX(), 0), -.1,1),0, gyroangle);
         } else if (autoTime > 6 + auto_wait_time && autoTime < 7 + auto_wait_time) {
           elevatorLeft.set(elevatorPID.calculate(elevator_encoder.getPosition(), autoElevatorHeight)*.5);
           elevatorRight.set(elevatorPID.calculate(elevator_encoder.getPosition(), autoElevatorHeight)*.5);
@@ -361,7 +350,7 @@ public class Robot extends TimedRobot {
         DriveSubsystem.drive(.2, 0, 0, gyroangle);
       }
         else if (autoTime > (1 + auto_wait_time) && autoTime < (6 + auto_wait_time)) {
-        DriveSubsystem.drive(.2, -MathUtil.clamp(strafeController.calculate(tx, 0), -.1,1), 0, gyroangle);
+        DriveSubsystem.drive(.2, -MathUtil.clamp(PIDSubsystem.getStrafeController().calculate(CameraSubsystem.getX(), 0), -.1,1), 0, gyroangle);
       } else if (autoTime > (6 + auto_wait_time) && autoTime < (7 + auto_wait_time)) {
         elevatorLeft.set(elevatorPID.calculate(elevator_encoder.getPosition(), autoElevatorHeight)*.5);
         elevatorRight.set(elevatorPID.calculate(elevator_encoder.getPosition(), autoElevatorHeight)*.5);
@@ -400,6 +389,12 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
 
+    PIDSubsystem pidSubsystem = new PIDSubsystem();
+    pidSubsystem.updatePIDCoefficients();
+    pidSubsystem.getStrafeController();
+    pidSubsystem.getTravelToController();
+    pidSubsystem.getAnglePreserve();
+    cameraSubsystem.getVariables();
     getlimelightcontrols();
     SmartDashboard.putNumber("Gyro Angle", gyro.getAngle());
     if (drive_controller.getAButton()) {
@@ -559,15 +554,6 @@ private void setElevatorPosition(PIDController pidController, double targetPosit
 
     // Outputs limelight as variables and puts them in the dashboard
 
-    // Boolean that is 1 if a target is detected, 0 if not
-    double tv = NetworkTableInstance.getDefault().getTable("limelight").getEntry("tv").getDouble(0);
-    // X angle distance from center of camera frame to center of target
-    double tx = NetworkTableInstance.getDefault().getTable("limelight").getEntry("tx").getDouble(0);
-    // Y angle distance from center of camera frame to center of target
-    double ty = NetworkTableInstance.getDefault().getTable("limelight").getEntry("ty").getDouble(0);
-    // Area of the camera frame that the object takes up, can be used to estimate
-    // how close the object is
-    double ta = NetworkTableInstance.getDefault().getTable("limelight").getEntry("ta").getDouble(0);
 
     int id = NetworkTableInstance.getDefault().getTable("limelight").getEntry("tid").getNumber(0).intValue();
     double tagAngle = getTagAngle(id);
@@ -595,17 +581,17 @@ private void setElevatorPosition(PIDController pidController, double targetPosit
     strafeController.setIZone(1);
     PIDController turnController = new PIDController(.02, .1, 0);
     PIDController anglePreserve = new PIDController(.01, 0, 0);
-    SmartDashboard.putNumber("Target X", tx); // Distance between of the crosshair and the object in the X coordinate
-    SmartDashboard.putNumber("Target y", ty); // Distance between of the crosshair and the object in the Y coordinate
-    SmartDashboard.putNumber("Target Area", ta); // The area that the object takes up
-    SmartDashboard.putNumber("Target Present", tv);
+    SmartDashboard.putNumber("Target X", CameraSubsystem.getX()); // Distance between of the crosshair and the object in the X coordinate
+    SmartDashboard.putNumber("Target y", CameraSubsystem.getY()); // Distance between of the crosshair and the object in the Y coordinate
+    SmartDashboard.putNumber("Target Area", CameraSubsystem.getArea()); // The area that the object takes up
+    SmartDashboard.putNumber("Target Present", CameraSubsystem.getTV());
     SmartDashboard.putNumber("Target ID", id);
 
     // what % of the limelight vision the april tag takes up
     double movePoint = 5;
-    double travelTo = (4 - ta) * (-0.01 / ta);
-    SmartDashboard.putNumber("strafe value", strafeController.calculate(tx, 0));
-    SmartDashboard.putNumber("travel value", travelToController.calculate(ta, movePoint));
+    double travelTo = (4 - CameraSubsystem.getArea()) * (-0.01 / CameraSubsystem.getArea());
+    SmartDashboard.putNumber("strafe value", strafeController.calculate(CameraSubsystem.getX(), 0));
+    SmartDashboard.putNumber("travel value", travelToController.calculate(CameraSubsystem.getArea(), movePoint));
 
     // Multiplier that turns the area that the object takes up into a motor output
     // percent.
@@ -624,10 +610,10 @@ private void setElevatorPosition(PIDController pidController, double targetPosit
     if (drive_controller.getLeftBumper()) {
         NetworkTableInstance.getDefault().getTable("limelight").getEntry("pipeline").setNumber(2);
         
-        if (tv == 1) {
+        if (CameraSubsystem.getTV() == 1) {
           DriveSubsystem.drive(
             drive_controller.getLeftY()*-.3, 
-            -MathUtil.clamp(strafeController.calculate(tx, 0), -.5, .5), 
+            -MathUtil.clamp(strafeController.calculate(CameraSubsystem.getX(), 0), -.5, .5), 
             -MathUtil.clamp(turnController.calculate((gyro.getAngle() + offset) % 360, tagAngle),-.1,.1),
             gyroangle
             );
@@ -636,10 +622,10 @@ private void setElevatorPosition(PIDController pidController, double targetPosit
     } else if (drive_controller.getRightBumper()) {
       NetworkTableInstance.getDefault().getTable("limelight").getEntry("pipeline").setNumber(3); 
 
-      if (tv == 1) {
+      if (CameraSubsystem.getTV() == 1) {
         DriveSubsystem.drive(
         drive_controller.getLeftY()*-.6, 
-        -MathUtil.clamp(strafeController.calculate(tx, 0), -.5, .5), 
+        -MathUtil.clamp(strafeController.calculate(CameraSubsystem.getX(), 0), -.5, .5), 
         -MathUtil.clamp(turnController.calculate((gyro.getAngle() + offset) % 360, tagAngle),-.1,.1),
         gyroangle
         );
@@ -651,12 +637,12 @@ private void setElevatorPosition(PIDController pidController, double targetPosit
       // Set the limelight to the right offset of the April tag
       NetworkTableInstance.getDefault().getTable("limelight").getEntry("pipeline").setNumber(3);
       // Check to see if the robot can see an April tag
-      if (tv == 1) {
+      if (CameraSubsystem.getTV() == 1) {
         try {
           // Strafe to the April tag
           DriveSubsystem.drive(
               0,
-              -MathUtil.clamp(strafeController.calculate(tx, 0), -.3, .3),
+              -MathUtil.clamp(strafeController.calculate(CameraSubsystem.getX(), 0), -.3, .3),
               0,
               gyroangle);
           // Set robot to manual control if the robot can't see a April tag
@@ -693,9 +679,9 @@ private void setElevatorPosition(PIDController pidController, double targetPosit
       //rightFront.set(0.5);
 
     } else if (drive_controller.getYButton()) {
-      if (tv == 1) {
+      if (CameraSubsystem.getTV() == 1) {
         // Moves forward using travelTo PID Controller
-        DriveSubsystem.drive(travelToController.calculate(ta, movePoint), 0, 0, gyroangle);
+        DriveSubsystem.drive(travelToController.calculate(CameraSubsystem.getArea(), movePoint), 0, 0, gyroangle);
       }
 
 
